@@ -7,13 +7,13 @@
 
 Build a vocabulary of **characters + whole words + multi-word phrases**, then encode each page with **DP** that picks the fewest pieces (phrase if helpful, else word, else characters).
 
-Can drive \(X=1\) (complete inventory) or lower \(X\) via phrases. Must respect the 10k cap or hard_ok fails.
+Can drive $X=1$ (complete inventory) or lower $X$ via phrases. Must respect the 10k cap or hard_ok fails.
 
 ## How it works
 
 1. Bases (scripts, digits, specials).  
 2. Unique page words.  
-3. Optional high-savings multiword n-grams (often worst-\(X\) language first).  
+3. Optional high-savings multiword n-grams (often worst-$X$ language first).  
 4. Filler char n-grams.  
 5. Encode: pretok words → DP over word/phrase lattice.
 
@@ -43,9 +43,9 @@ python3 data/grok_2/approaches/e/hybrid_tokenizer.py
 
 | | EN | HI | TE | SA |
 |--|---:|---:|---:|---:|
-| \(D\) | 30 820* | 13 635 | 4 053 | 2 092 |
-| \(T\) | 30 820 | 13 635 | 4 053 | 2 092 |
-| \(X\) | **1.000** | **1.000** | **1.000** | **1.000** |
+| $D$ | 30 820* | 13 635 | 4 053 | 2 092 |
+| $T$ | 30 820 | 13 635 | 4 053 | 2 092 |
+| $X$ | **1.000** | **1.000** | **1.000** | **1.000** |
 
 | Aggregate | Value |
 |-----------|------:|
@@ -53,11 +53,11 @@ python3 data/grok_2/approaches/e/hybrid_tokenizer.py
 | Vocab size | **12 603** |
 | hard_ok | **no** (vocab **> 10 000**) |
 
-To use E legitimately on full_page you must **cap** inventory/phrases at 10k (accept \(X_{\mathrm{EN}}>1\) or rebuild selection).
+To use E legitimately on full_page you must **cap** inventory/phrases at 10k (accept $X_{\mathrm{EN}}>1$ or rebuild selection).
 
 ### Early corpus (notes) — cap satisfied
 
-| Mode | vocab | \(X\) pattern | score |
+| Mode | vocab | $X$ pattern | score |
 |------|------:|---------------|------:|
 | Full words + bases | ≤10k | all ≈1.0 | **∞** |
 | Compressed multiword | 10k | ≈0.50 equalized | ~1.8e5 |
@@ -68,7 +68,7 @@ To use E legitimately on full_page you must **cap** inventory/phrases at 10k (ac
 |-----------|------|
 | Script / char bases | always present |
 | Union of page types | main mass (blows past 10k on full_page) |
-| Multiword phrases | optional; lowers \(T\) unevenly |
+| Multiword phrases | optional; lowers $T$ unevenly |
 | Residual char n-grams | OOV substructure |
 | Total must be | **≤ 10 000** for assignment |
 

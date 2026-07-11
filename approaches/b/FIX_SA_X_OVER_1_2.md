@@ -1,4 +1,4 @@
-# Fix: SA \(X > 1.2\) on full_page_md (Approach B)
+# Fix: SA $X > 1.2$ on full_page_md (Approach B)
 
 **Date:** 2026-07-11  
 **File changed:** `train_optimized_b.py`  
@@ -12,13 +12,13 @@ Global savings fill (stage-2) ranked words by total token savings across languag
 
 | | Before (global fill) | After (deficit fill) |
 |--|--:|--:|
-| \(X_{\mathrm{SA}}\) | **1.226 – 1.227** | **1.110** |
-| \(X_{\mathrm{EN}}\) | 1.117 | 1.157 |
+| $X_{\mathrm{SA}}$ | **1.226 – 1.227** | **1.110** |
+| $X_{\mathrm{EN}}$ | 1.117 | 1.157 |
 | hard_ok (X_EN ≤ 1.2) | yes | yes |
-| hard_ok_all (\(X_L\le 1.2\ \forall L\)) | **no** | **yes** |
+| hard_ok_all ($X_L\le 1.2\ \forall L$) | **no** | **yes** |
 | score_words | ~9 070 – 9 147 | **~9 298** |
 
-Needed to cut SA: only ≈ **55** tokens (\(T_{\mathrm{SA}}\) from ~2567 → ≤ 1.2×2092 ≈ 2510).
+Needed to cut SA: only ≈ **55** tokens ($T_{\mathrm{SA}}$ from ~2567 → ≤ 1.2×2092 ≈ 2510).
 
 ---
 
@@ -32,13 +32,13 @@ Replaced pure
 **Phase A — fairness (residual to τ=1.2)**
 
 While any language has residual  
-\(\max(0,\, T_L - \tau \cdot D_L) > 0\) and seats remain:
+$\max(0,\, T_L - \tau \cdot D_L) > 0$ and seats remain:
 
-1. Pick worst language \(L^\star = \arg\max_L\) residual.  
+1. Pick worst language $L^\star = \arg\max_L$ residual.  
 2. Add the unused type that maximizes  
-   \(f_{L^\star}(w)\cdot\max(0,\,p(w)-1)\)  
+   $f_{L^\star}(w)\cdot\max(0,\,p(w)-1)$  
    (tie-break: global α-weighted savings).  
-3. Incrementally subtract saved tokens from running \(T_{L}\).
+3. Incrementally subtract saved tokens from running $T_{L}$.
 
 **Phase B — score leftover seats**
 
@@ -57,7 +57,7 @@ Legacy path preserved: `--fill-mode global`.
 
 - `fill_mode`, `tau`  
 - `phase_a_added`, `phase_b_added`, `phase_a_by_lang`  
-- `hard_ok_all_langs` (every \(X_L \le \tau\))
+- `hard_ok_all_langs` (every $X_L \le \tau$)
 
 ### 4. What we did *not* change
 

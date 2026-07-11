@@ -39,7 +39,7 @@ They are **dataset builders + score dumps**, not separate “mystery approaches.
 
 ## Primary corpus stats (`full_page_md`, harness-cleaned words)
 
-| Lang | File | Raw chars | Clean chars | Words \(D\) | Unique | MD links |
+| Lang | File | Raw chars | Clean chars | Words $D$ | Unique | MD links |
 |------|------|----------:|------------:|------------:|-------:|---------:|
 | EN | `india_en.md` | 351 678 | 191 158 | 30 789 | 7 015 | 2 784 |
 | HI | `india_hi.md` | 227 643 | 75 783 | 13 630 | 3 589 | 1 182 |

@@ -13,11 +13,11 @@ approaches/
 └── champion/          Packing + residual words
 ```
 
-Each folder has a full **README.md** (idea, files, \(X\)/score, vocab, honesty).
+Each folder has a full **README.md** (idea, files, $X$/score, vocab, honesty).
 
 ## Board (`full_page_md` class)
 
-| ID | Folder | Submitted? | Vocab | score | \(X_{\mathrm{EN}}\) | \(X_{\mathrm{HI}}\) | \(X_{\mathrm{TE}}\) | \(X_{\mathrm{SA}}\) | Honesty |
+| ID | Folder | Submitted? | Vocab | score | $X_{\mathrm{EN}}$ | $X_{\mathrm{HI}}$ | $X_{\mathrm{TE}}$ | $X_{\mathrm{SA}}$ | Honesty |
 |----|--------|:----------:|------:|------:|--------------------:|--------------------:|--------------------:|--------------------:|--------:|
 | **B** | [`b/`](b/README.md) | **YES** | 10 000 | **9237** | 1.158 | 1.085 | 1.050 | 1.110 | **6–7** |
 | A | [`a/`](a/README.md) | no | 10 000 | ~1500 | 1.216 | 1.207 | 1.635 | 1.874 | **8** |

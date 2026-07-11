@@ -27,7 +27,7 @@ Variants in `train_bpe.py`: `pure_concat`, `upsample`, `word_bpe`, `word_bpe_ups
 
 | Shared | Role |
 |--------|------|
-| `../harness/eval_metrics.py` | \(X\), score |
+| `../harness/eval_metrics.py` | $X$, score |
 | `../../datasets/full_page_md/` | pages |
 | `../datasets/build_full_page/results/A.json` | board |
 
@@ -41,18 +41,18 @@ python3 data/grok_2/approaches/a/train_bpe.py
 
 | | EN | HI | TE | SA |
 |--|---:|---:|---:|---:|
-| \(D\) (words) | 30 820* | 13 635 | 4 053 | 2 092 |
-| \(T\) (tokens) | 37 483 | 16 461 | 6 627 | 3 920 |
-| \(X=T/D\) | **1.216** | **1.207** | **1.635** | **1.874** |
+| $D$ (words) | 30 820* | 13 635 | 4 053 | 2 092 |
+| $T$ (tokens) | 37 483 | 16 461 | 6 627 | 3 920 |
+| $X=T/D$ | **1.216** | **1.207** | **1.635** | **1.874** |
 
 | Aggregate | Value |
 |-----------|------:|
 | **Final score** | **≈ 1500.28** |
-| gap \(\max X-\min X\) | ≈ 0.6666 |
+| gap $\max X-\min X$ | ≈ 0.6666 |
 | Vocab size | **10 000** |
-| hard_ok (\(X_{\mathrm{EN}}\le 1.2\), V≤10k) | **no** (\(X_{\mathrm{EN}}>1.2\)) |
+| hard_ok ($X_{\mathrm{EN}}\le 1.2$, V≤10k) | **no** ($X_{\mathrm{EN}}>1.2$) |
 
-\*Board \(D\) may use pre-link regeneration counts; linked corpus is EN 30 789 etc. (same order of magnitude).
+\*Board $D$ may use pre-link regeneration counts; linked corpus is EN 30 789 etc. (same order of magnitude).
 
 ### Vocab distribution (pure A)
 
@@ -69,7 +69,7 @@ python3 data/grok_2/approaches/a/train_bpe.py
 |--|--|
 | **Score** | **8 / 10** |
 | **Why honest** | Real pair-merge BPE. Metrics are true compression under a shared subword inventory. No multi-word page packing, no pretend that all page words are in the list. Answer to “what does BPE alone do?” |
-| **Shortcomings** | Shared merges are EN-heavy → TE/SA stay multi-piece → large gap → low fairness score. On full_page, \(X_{\mathrm{EN}}\) can fail 1.2. Weak competitive for the assignment matric without hybrid tricks. |
+| **Shortcomings** | Shared merges are EN-heavy → TE/SA stay multi-piece → large gap → low fairness score. On full_page, $X_{\mathrm{EN}}$ can fail 1.2. Weak competitive for the assignment matric without hybrid tricks. |
 
 ## Relation to submission
 

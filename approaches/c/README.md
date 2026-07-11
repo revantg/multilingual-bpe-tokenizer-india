@@ -8,8 +8,8 @@
 Fill the 10 000-token budget with **as many exact spellings of page words as possible**, plus characters for leftovers.  
 No merge training. Encode = whole word if listed, else character pieces.
 
-When unique words of all pages fit in 10k → \(X=1\) everywhere → score **∞**.  
-On full_page, union unique ≈ **12.6k** > 10k → English OOVs make \(X_{\mathrm{EN}}\) bad.
+When unique words of all pages fit in 10k → $X=1$ everywhere → score **∞**.  
+On full_page, union unique ≈ **12.6k** > 10k → English OOVs make $X_{\mathrm{EN}}$ bad.
 
 ## How it works
 
@@ -44,17 +44,17 @@ python3 data/grok_2/approaches/c/run.py
 
 | | EN | HI | TE | SA |
 |--|---:|---:|---:|---:|
-| \(D\) | 30 820* | 13 635 | 4 053 | 2 092 |
-| \(T\) | 47 902 | 13 635 | 4 053 | 2 092 |
-| \(X\) | **1.554** | **1.000** | **1.000** | **1.000** |
+| $D$ | 30 820* | 13 635 | 4 053 | 2 092 |
+| $T$ | 47 902 | 13 635 | 4 053 | 2 092 |
+| $X$ | **1.554** | **1.000** | **1.000** | **1.000** |
 
 | Aggregate | Value |
 |-----------|------:|
 | **Final score** | **≈ 1804.24** |
 | Vocab size | **≈ 9 914** |
-| hard_ok | **no** (\(X_{\mathrm{EN}}>1.2\)) |
+| hard_ok | **no** ($X_{\mathrm{EN}}>1.2$) |
 
-\*Smaller langs get essentially full type coverage → \(X=1\); EN carries almost all residual OOV piece mass.
+\*Smaller langs get essentially full type coverage → $X=1$; EN carries almost all residual OOV piece mass.
 
 ### Vocab distribution (typical C words-first)
 
@@ -68,7 +68,7 @@ python3 data/grok_2/approaches/c/run.py
 
 ### Early corpus (union unique ≤ 10k) — from NOTES
 
-| Variant | vocab | \(X\) all | score |
+| Variant | vocab | $X$ all | score |
 |---------|------:|-----------|------:|
 | C words-only | ~8311 | all 1.0 | **∞** |
 | + fair bigrams | 10k | unequal | ~7k |
@@ -79,7 +79,7 @@ python3 data/grok_2/approaches/c/run.py
 |--|--|
 | **Score** | **9 / 10** |
 | **Why honest** | Method is exactly what it claims: a **closed word list** + chars. No fake subword theory. Metrics are easy to recompute. |
-| **Shortcomings** | Not BPE. When unique types exceed 10k, **equity depends on who gets listed** — typical fills protect small languages and leave EN with huge \(T\). No generalization beyond listed spellings (chars only). Bigrams can make score *worse* than pure \(X=1\). |
+| **Shortcomings** | Not BPE. When unique types exceed 10k, **equity depends on who gets listed** — typical fills protect small languages and leave EN with huge $T$. No generalization beyond listed spellings (chars only). Bigrams can make score *worse* than pure $X=1$. |
 
 ## Relation to submission
 

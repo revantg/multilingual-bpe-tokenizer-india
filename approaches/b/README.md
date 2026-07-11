@@ -16,8 +16,8 @@ Common words drop from many pieces to **one**. OWVs still fall back to stage-1 B
 | Stage | ≈ Slots | Behavior |
 |-------|--------:|----------|
 | 1 · BPE | 2 500 | `ClassicBPE.train` (optional EN merge weight) |
-| 2a · deficit | variable | Add whole words for lang with largest residual above \(\tau=1.2\) |
-| 2b · leftovers | rest of 7 500 words | Global savings (\(freq × pieces\ saved\)) |
+| 2a · deficit | variable | Add whole words for lang with largest residual above $\tau=1.2$ |
+| 2b · leftovers | rest of 7 500 words | Global savings ($freq × pieces\ saved$) |
 | Encode | — | In list → 1 token; else DP over BPE pieces |
 
 CLI: `--fill-mode deficit|global`, `--tau 1.2`, `--bpe-size 2500`, `--vocab-cap 10000`.
@@ -56,9 +56,9 @@ python3 data/grok_2/approaches/b/train_optimized_b.py \
 
 | | EN | HI | TE | SA |
 |--|---:|---:|---:|---:|
-| \(D\) (words) | 30 789 | 13 630 | 4 053 | 2 091 |
-| \(T\) (tokens) | 35 649 | 14 788 | 4 254 | 2 322 |
-| \(X=T/D\) | **1.158** | **1.085** | **1.050** | **1.110** |
+| $D$ (words) | 30 789 | 13 630 | 4 053 | 2 091 |
+| $T$ (tokens) | 35 649 | 14 788 | 4 254 | 2 322 |
+| $X=T/D$ | **1.158** | **1.085** | **1.050** | **1.110** |
 
 | Aggregate | Value |
 |-----------|------:|
@@ -66,7 +66,7 @@ python3 data/grok_2/approaches/b/train_optimized_b.py \
 | gap | 0.108256 |
 | Vocab size | **10 000** |
 | hard_ok | **yes** |
-| all \(X\le 1.2\) | **yes** |
+| all $X\le 1.2$ | **yes** |
 | UNK on train pages | **0** |
 
 ### Vocab distribution
@@ -93,7 +93,7 @@ python3 data/grok_2/approaches/b/train_optimized_b.py \
 
 | | EN | HI | TE | SA | score |
 |--|---:|---:|---:|---:|------:|
-| \(X\) | 1.336 | 1.000 | 1.000 | 1.000 | ~2975 |
+| $X$ | 1.336 | 1.000 | 1.000 | 1.000 | ~2975 |
 | hard_ok | no | (SA/TE OK but EN over 1.2) | | | |
 
 ## Honesty
@@ -101,8 +101,8 @@ python3 data/grok_2/approaches/b/train_optimized_b.py \
 | | |
 |--|--|
 | **Score** | **6–7 / 10** |
-| **Why somewhat honest** | Still a **tokenizer**: OOV words get BPE pieces; vocab ≤10k; encode is type-level (not multi-word page IDs). Deficit fill is a clear, documentable rule (fix \(X>1.2\)). Numbers match retrain under the same harness. |
-| **Shortcomings** | Stage-2 seats are chosen from **these India pages** — partly closed-set. Transfer to new domains weaker than pure large-BPE. Not “pure BPE.” Fairness coefficients are assignment-aware (\(\tau=1.2\)). |
+| **Why somewhat honest** | Still a **tokenizer**: OOV words get BPE pieces; vocab ≤10k; encode is type-level (not multi-word page IDs). Deficit fill is a clear, documentable rule (fix $X>1.2$). Numbers match retrain under the same harness. |
+| **Shortcomings** | Stage-2 seats are chosen from **these India pages** — partly closed-set. Transfer to new domains weaker than pure large-BPE. Not “pure BPE.” Fairness coefficients are assignment-aware ($\tau=1.2$). |
 
 ## Relation to others
 

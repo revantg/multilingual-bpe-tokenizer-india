@@ -9,7 +9,7 @@
 
 ## 0. Executive verdict (one paragraph)
 
-**The “champion” score of ~1.97×10⁸ is not a BPE achievement; it is engineered page-packing.** On the four exact cleaned India Wikipedia pages, `encode(text, lang)` short-circuits when `text == corpus_texts[lang]` and returns a precomputed list of contiguous multi-word slices whose counts \(T^* = (633,418,130,80)\) were chosen so \(X_i = T_i/D_i\) nearly match at ~0.05135 — gap ~5×10⁻⁶ → score ≈ 197,242,800. There is no merge table driving that path, no subword fertility learning, and a **one-character** mutation of the page blows T from 633 to ~11k. Meanwhile whole-word inventories (C / B-closure / E primary) already produce **score = ∞** with \(X_i = 1\) exactly under the same harness — which is *higher* than 197M, yet the swarm leaderboard ranks ∞ *below* the packing oracle. Pure iterative BPE that still satisfies \(X_{EN}≤1.2\) only gets ~2.2k. History in `HANDOFF_REPORT.md` and `data/grok/APPROACHES.md` shows the same pattern: metric traveled from “memorize 20-word n-grams” to “whole-doc mega-token” to “equal-X spans.” **Real achievement = sharp measurement of the metric’s loopholes and a decent pure-BPE baseline; theatre = calling span packing a multilingual BPE tokenizer with a chalkboard number of 197M.**
+**The “champion” score of ~1.97×10⁸ is not a BPE achievement; it is engineered page-packing.** On the four exact cleaned India Wikipedia pages, `encode(text, lang)` short-circuits when `text == corpus_texts[lang]` and returns a precomputed list of contiguous multi-word slices whose counts $T^* = (633,418,130,80)$ were chosen so $X_i = T_i/D_i$ nearly match at ~0.05135 — gap ~5×10⁻⁶ → score ≈ 197,242,800. There is no merge table driving that path, no subword fertility learning, and a **one-character** mutation of the page blows T from 633 to ~11k. Meanwhile whole-word inventories (C / B-closure / E primary) already produce **score = ∞** with $X_i = 1$ exactly under the same harness — which is *higher* than 197M, yet the swarm leaderboard ranks ∞ *below* the packing oracle. Pure iterative BPE that still satisfies $X_{EN}≤1.2$ only gets ~2.2k. History in `HANDOFF_REPORT.md` and `data/grok/APPROACHES.md` shows the same pattern: metric traveled from “memorize 20-word n-grams” to “whole-doc mega-token” to “equal-X spans.” **Real achievement = sharp measurement of the metric’s loopholes and a decent pure-BPE baseline; theatre = calling span packing a multilingual BPE tokenizer with a chalkboard number of 197M.**
 
 ---
 
@@ -27,24 +27,24 @@ Denom modes:
   fixed  — D_i = 5000 for all languages
 ```
 
-- \(T_i = \mathrm{len}(\mathrm{encode}(\mathit{corpora}[i], i))\) — **only counts tokens returned for the full page string**.
-- Default \(D_i\) = number of matches of `WORD_RE` after `clean_text` (`words` mode).
-- `hard_ok` = \(X_{EN} ≤ 1.2\) and vocab ≤ 10 000.
+- $T_i = \mathrm{len}(\mathrm{encode}(\mathit{corpora}[i], i))$ — **only counts tokens returned for the full page string**.
+- Default $D_i$ = number of matches of `WORD_RE` after `clean_text` (`words` mode).
+- `hard_ok` = $X_{EN} ≤ 1.2$ and vocab ≤ 10 000.
 - Gap < 1e-15 → **score = inf**.
 
 There is **no** requirement that encode generalize, no held-out text, no train/test split, no round-trip fidelity check, no “must be BPE merges.” Creative methods are declared OK. That is the assignment’s own soft underbelly: **page-local `len(encode)` is the entire universe.**
 
-### Assignment ambiguity: what is \(D_i\)?
+### Assignment ambiguity: what is $D_i$?
 
 | Interpretation of “Total vocab/words (~5000 for English)” | Effect |
 |----------------------------------------------------------|--------|
-| **Fixed 5000** (handoff / original X1) | \(X_{EN}=T_{EN}/5000\); mega-token \(T=1\) → \(X=0.0002\); all-lang mega → **score inf** under fixed |
-| **Word count of page** (swarm default) | Fairness as tokens-per-word; whole words ⇒ \(X=1\) ⇒ **inf**; packing equalizes any rate \(r\) |
+| **Fixed 5000** (handoff / original X1) | $X_{EN}=T_{EN}/5000$; mega-token $T=1$ → $X=0.0002$; all-lang mega → **score inf** under fixed |
+| **Word count of page** (swarm default) | Fairness as tokens-per-word; whole words ⇒ $X=1$ ⇒ **inf**; packing equalizes any rate $r$ |
 | **Unique words** | Fertility proxy; not optimized seriously here |
 
 **This single ambiguity changes the winner.**  
 - Under **fixed**: four full-doc tokens win (inf).  
-- Under **words**: any method that forces identical \(X_i\) wins (inf at \(X=1\), or absurd finite scores near equal low \(r\)).  
+- Under **words**: any method that forces identical $X_i$ wins (inf at $X=1$, or absurd finite scores near equal low $r$).  
 - Under a **real BPE oral**, neither packing nor “∞ by definition of identity mapping” would count.
 
 The swarm *chose* `words` denom, then *also* casually re-ranked a finite packing score above mathematical infinity (see §5). That is score-presentation theatre.
@@ -83,7 +83,7 @@ NOTES.md is explicit:
 > CRITICAL: encode returns the intended packed span list (not re-tokenize).  
 > Gaming note: … Fairness is achieved by baking page-specific phrase tablets …
 
-Oracle \(T^* = (633,418,130,80)\), vocab **1261** spans only, score **197242799.99980137**, gap **5.069e-6**.
+Oracle $T^* = (633,418,130,80)$, vocab **1261** spans only, score **197242799.99980137**, gap **5.069e-6**.
 
 ### Champion hybrid: same short-circuit, prettier costume
 
@@ -123,7 +123,7 @@ Residual whole-words/bigrams/chars **do not touch** primary-page T. They are the
 | Always `return ["MEGA"]` | score ~**1.78M** under words (gap dominated by short SA) |
 | Whole words only | **score = inf**, X=1 all |
 
-**Conclusion:** The score can be gamed by making encode ignore real tokenization on known pages only. The champion does exactly that. Even a fake span list of abstract IDs would score if lengths match \(T^*\).
+**Conclusion:** The score can be gamed by making encode ignore real tokenization on known pages only. The champion does exactly that. Even a fake span list of abstract IDs would score if lengths match $T^*$.
 
 ---
 
@@ -150,7 +150,7 @@ Scale: **Honesty 1–10** = would you defend this as a tokenizer in an oral with
 | | |
 |--|--|
 | **What it is** | Temperature upsample, script budgets (DEV shared HI+SA, TE exclusive), minimax merge selection; **then whole-word fill** |
-| **Merges-only** | score ≈ **2588**, **fails** \(X_{EN}≤1.2\) (X_EN≈1.72) |
+| **Merges-only** | score ≈ **2588**, **fails** $X_{EN}≤1.2$ (X_EN≈1.72) |
 | **With whole-word fill** | **inf** at X=1, vocab ~9.1k |
 | **Honesty** | Merge-phase analysis: **7/10**. Final leaderboard artifact: **3/10** (same closures as C) |
 | **Score-hunting** | **8/10** — fair BPE is scientifically interesting; ∞ is inventory |
@@ -159,7 +159,7 @@ Scale: **Honesty 1–10** = would you defend this as a tokenizer in an oral with
 
 | | |
 |--|--|
-| **What it is** | Put ~8311 unique words (+ chars) in vocab; encode = 1 token/word ⇒ \(T=D\) ⇒ \(X=1\) ⇒ **∞** |
+| **What it is** | Put ~8311 unique words (+ chars) in vocab; encode = 1 token/word ⇒ $T=D$ ⇒ $X=1$ ⇒ **∞** |
 | **Bigrams after words** | *Lowers* score (gap ~0.13–0.19 → score ~5–7k) — they correctly noticed this |
 | **Honesty** | **9/10** method transparency + correct anti-pattern on bigrams; still not “BPE” |
 | **Score-hunting** | **7/10** — deliberately rides the ∞ identity dict for max fairness under words denom; **mathematically maximal under their metric** |
@@ -170,7 +170,7 @@ Scale: **Honesty 1–10** = would you defend this as a tokenizer in an oral with
 
 | | |
 |--|--|
-| **What it is** | Partition each page’s word stream into \(n_i\) contiguous character spans; store spans; return them **only** for exact page match |
+| **What it is** | Partition each page’s word stream into $n_i$ contiguous character spans; store spans; return them **only** for exact page match |
 | **Best numbers** | T*=(633,418,130,80), gap≈5.07e-6, **score≈1.972e8**, vocab 1261 |
 | **Mega-doc T=1** | words denom: score ~1.78M (bad gap SA vs EN); **fixed denomin: score inf** |
 | **Honesty** | Notes admit “score-oracle / gaming”: **6/10** (candid docs, dishonest name “tokenizer” if sold as BPE) |
@@ -202,7 +202,7 @@ Compressed E is the **best “I actually shortened token sequences fairly withou
 | **Sold as** | “Best combination” score ≈ 1.97e8 |
 | **Honesty** | **3/10** as a BPE system; **6/10** if explicitly labeled “page fairness oracle + residual inventory” |
 | **Score-hunting** | **10/10** |
-| **Extra sin** | Under **fixed** denom, champion falls to **score ≈ 9042** (X: 0.127 / 0.084 / 0.026 / 0.016) — packing that equalizes \(T/D_{words}\) **un-equalizes** \(T/5000\). One wrong denom choice tanks the dramatized number. |
+| **Extra sin** | Under **fixed** denom, champion falls to **score ≈ 9042** (X: 0.127 / 0.084 / 0.026 / 0.016) — packing that equalizes $T/D_{words}$ **un-equalizes** $T/5000$. One wrong denom choice tanks the dramatized number. |
 
 ---
 
@@ -217,7 +217,7 @@ Compressed E is the **best “I actually shortened token sequences fairly withou
    - Identity `text == corpus` is brittle; corpus is `clean_text(raw)`. Grader with slightly different cleaner → packing off.
 
 3. **Partial page / section**  
-   - Half page is not half of \(T^*\); secondary DP fires. Fairness X on partial demos is unrelated to 197M claim.
+   - Half page is not half of $T^*$; secondary DP fires. Fairness X on partial demos is unrelated to 197M claim.
 
 4. **Novel sentences / translationese / code-switch**  
    - OOV words explode to characters. “tokenizer” fails basic linguistic smoke tests (fox-dog evidence above).
@@ -225,8 +225,8 @@ Compressed E is the **best “I actually shortened token sequences fairly withou
 5. **Wrong `lang` argument**  
    - Packed lists keyed by language identity, not content. EN text + `lang=SA` → no match.
 
-6. **Different pretok for \(D\) than encode assumes**  
-   - Harness `WORD_RE` vs naive `\S+` differs (EN 12328 vs 12192). If grader recounts words differently, both \(X\) and “equal T≈rD” fall apart.
+6. **Different pretok for $D$ than encode assumes**  
+   - Harness `WORD_RE` vs naive `\S+` differs (EN 12328 vs 12192). If grader recounts words differently, both $X$ and “equal T≈rD” fall apart.
 
 7. **Fixed-5000 denom (original wording energy)**  
    - Champion score plunges; **mega T=1 all langs** wins with **inf**. Their own SWARM_REPORT admits this.
@@ -248,7 +248,7 @@ Compressed E is the **best “I actually shortened token sequences fairly withou
 
 ### Attacks that pure BPE must answer (fair)
 
-- Why \(X_{TE}, X_{SA} > X_{EN}\)? Answer: script mass + morphology + less shared Latin merges — A/B notes actually have this, and it’s the only scientifically real finding.
+- Why $X_{TE}, X_{SA} > X_{EN}$? Answer: script mass + morphology + less shared Latin merges — A/B notes actually have this, and it’s the only scientifically real finding.
 
 ---
 
@@ -266,14 +266,14 @@ From `results/SWARM_REPORT.md`:
 1. an implicit unstated constraint (“prefer finite but highly compressed equal-X”), or  
 2. **chalkboard fraud**.
 
-If the metric is \(1000/(X_{max}-X_{min})\), **words-only already maximizes it.** Packing only wins if you:
+If the metric is $1000/(X_{max}-X_{min})$, **words-only already maximizes it.** Packing only wins if you:
 
-- outlaw \(X=1\) inventories, or  
+- outlaw $X=1$ inventories, or  
 - switch to fixed denom, or  
 - redefine success as “small equal X” rather than score, or  
 - sort by human awe at scientific notation.
 
-Worse: **exact equal X at any rate** is *harder* than equal at 1 because \(\gcd(D_{EN},D_{HI},D_{TE},D_{SA})=1\), so only integer multiples that are exact common rates are rare — packing settles for near-equality (gap 5e-6). Words inventory hits gap **exactly 0**.
+Worse: **exact equal X at any rate** is *harder* than equal at 1 because $\gcd(D_{EN},D_{HI},D_{TE},D_{SA})=1$, so only integer multiples that are exact common rates are rare — packing settles for near-equality (gap 5e-6). Words inventory hits gap **exactly 0**.
 
 ---
 
@@ -330,8 +330,8 @@ Pure BPE (A) is the only submission that would survive a “prove this is BPE”
 
 ### What is the real achievement?
 
-1. **Clear formalization** of multilingual fertility-style fairness \(X_i=T_i/D_i\), with a shared test harness and three denom modes.  
-2. **Empirical map of tradeoffs:** EN-heavy BPE starves TE/SA; upsampling TE/SA breaks \(X_{EN}≤1.2\); residual whole-word slots fit under 10k and flatten X to 1; multiword spam widens gaps.  
+1. **Clear formalization** of multilingual fertility-style fairness $X_i=T_i/D_i$, with a shared test harness and three denom modes.  
+2. **Empirical map of tradeoffs:** EN-heavy BPE starves TE/SA; upsampling TE/SA breaks $X_{EN}≤1.2$; residual whole-word slots fit under 10k and flatten X to 1; multiword spam widens gaps.  
 3. **Honest pure-BPE number:** ~**2.2k** score under hard caps.  
 4. **Explicit documentation of packing hacks** (better than earlier handoff that presented 20-grams as a serious tokenizer).  
 5. **Recognition that fixed-5000 mega-doc and words-inventories both open inf loopholes.**
@@ -349,7 +349,7 @@ Pure BPE (A) is the only submission that would survive a “prove this is BPE”
 | Criterion | Grade pressure |
 |-----------|----------------|
 | Multilingual corpus & 10k budget | Pass |
-| \(X_{EN}≤1.2\) if required literally | Pass via cheats or words inventory |
+| $X_{EN}≤1.2$ if required literally | Pass via cheats or words inventory |
 | “BPE” implementation | **Fail / severe partial** for champion & D; partial for C/E; pass for pure A |
 | Fairness analysis write-up | Pass+ if they present pure BPE + loophole section with humility |
 | Headline 197M without caveats | **Ridicule** |
@@ -358,31 +358,31 @@ Pure BPE (A) is the only submission that would survive a “prove this is BPE”
 **Likely overall if champion submitted as “the answer” with BPE branding: D / 1.5 (≈ 40–55%).**  
 **If pure A + C as analysis of metric, clear loophole section, no 197M without “oracle packing baseline”: B− / B.**
 
-### Crucial ambiguity: \(D_i = ?\)
+### Crucial ambiguity: $D_i = ?$
 
 Without an official choice:
 
-- **words** → max score is **∞** at \(X_i=1\) (type inventory) or near-inf equal-rate packing.  
-- **fixed 5000** → max is **∞** with \(T_i=1\) for all (mega-doc), or uneven if T tracks length.  
+- **words** → max score is **∞** at $X_i=1$ (type inventory) or near-inf equal-rate packing.  
+- **fixed 5000** → max is **∞** with $T_i=1$ for all (mega-doc), or uneven if T tracks length.  
 - **unique** → different game for type-heavy languages.
 
-**You cannot claim a unique numeric champion until \(D_i\) is fixed in writing by the instructor.**
+**You cannot claim a unique numeric champion until $D_i$ is fixed in writing by the instructor.**
 
 ### Survive oral vs max chalkboard
 
 **Survive oral (recommended):**
 
-> “Union unique words across four India pages fit under 10 000. A whole-word vocabulary yields \(T_i=D_i\) so \(X_i=1\) and infinite fairness score under tokens-per-word — which means the metric is trivial on this corpus. Real BPE without vocabulary closure only reaches ~2.2k fairness score while keeping \(X_{EN}≤1.2\); Telugu/Sanskrit stay more fragmented. We also built a packing *upper-bound oracle* (~1e8) that allocates token counts proportional to word length by storing page slices; it is not a general tokenizer and collapses if the page string changes. For a real system we would train BPE on larger parallel/Wiki dumps, evaluate on held-out text, and report fertility + compression, not page-identity T.”
+> “Union unique words across four India pages fit under 10 000. A whole-word vocabulary yields $T_i=D_i$ so $X_i=1$ and infinite fairness score under tokens-per-word — which means the metric is trivial on this corpus. Real BPE without vocabulary closure only reaches ~2.2k fairness score while keeping $X_{EN}≤1.2$; Telugu/Sanskrit stay more fragmented. We also built a packing *upper-bound oracle* (~1e8) that allocates token counts proportional to word length by storing page slices; it is not a general tokenizer and collapses if the page string changes. For a real system we would train BPE on larger parallel/Wiki dumps, evaluate on held-out text, and report fertility + compression, not page-identity T.”
 
 **Max chalkboard (not recommended without labeling as oracle):**
 
-> Print D’s \(T^*=(633,418,130,80)\), gap 5e-6, score 1.97e8, vocab 1261; claim creative methods allowed. Die on “show merges,” “tokenize fox dog,” “here is a version with one extra space.”
+> Print D’s $T^*=(633,418,130,80)$, gap 5e-6, score 1.97e8, vocab 1261; claim creative methods allowed. Die on “show merges,” “tokenize fox dog,” “here is a version with one extra space.”
 
 ### Concrete honest improvements (if someone wants real multilingual BPE while caring about fairness)
 
 1. **Budgeted fair BPE, no page packing, no guaranteed whole-word closure as the headline result.** Keep A/B merge schedules (temperature + script budgets + minimax). Report fertility on **held-out** India-related and non-India Wiki paragraphs. Target minimize max fertility subject to EN fertility ≤ 1.2 **on held-out**, vocab ≤ 10k.  
 2. **Shared cross-lingual units where real:** Devanagari character/merge sharing for HI+SA is legitimate; reward merges by reduction in *max* residual pieces, not just EN pair frequency. Optionally add inferred transliteration pairs only if evaluated off-page.  
-3. **Metric that can’t be infinity-gamed by word inventories:** e.g. character-level compression \(T_i / |\mathrm{chars}|_i\), or forced base of alphabet with *merge-only* vocab budget, or evaluation mix of pages + random Wikipedia API samples with hard prohibition on exact-document vocabulary entries longer than N characters / cross-word spans for “primary” vocab.
+3. **Metric that can’t be infinity-gamed by word inventories:** e.g. character-level compression $T_i / |\mathrm{chars}|_i$, or forced base of alphabet with *merge-only* vocab budget, or evaluation mix of pages + random Wikipedia API samples with hard prohibition on exact-document vocabulary entries longer than N characters / cross-word spans for “primary” vocab.
 
 ---
 
@@ -410,7 +410,7 @@ Without an official choice:
 - **∞ is free** under words denom once unique words fit in 10k — and it *beats* packing if you respect math.  
 - **~2.2k is roughly the real pure-BPE hard-ok score.**  
 - **~183k is the real multiword-equalization score without identity packing.**  
-- **Assignment \(D_i\) ambiguity is load-bearing.** Fixed-5000 + mega-doc is another independent inf.  
+- **Assignment $D_i$ ambiguity is load-bearing.** Fixed-5000 + mega-doc is another independent inf.  
 - Any submission that presents the champion as a serious multilingual BPE without loud “oracle packing” labels **deserves to be failed on substance even if the metric numbers print correctly.**
 
 *— end red pill —*

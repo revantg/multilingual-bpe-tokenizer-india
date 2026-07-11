@@ -7,16 +7,16 @@ Corpus: `full_page_md` with markdown links · `fill_mode=deficit` · `tau=1.2`
 | Field | Value |
 |------:|------:|
 | **score_words** | **9237.39** |
-| formula | \(1000 / (\max X - \min X)\) |
+| formula | $1000 / (\max X - \min X)$ |
 | gap | 0.108256 |
 | vocab | 10 000 |
-| hard_ok (\(X_{\mathrm{EN}}\le 1.2\)) | yes |
-| all \(X\le 1.2\) | yes |
+| hard_ok ($X_{\mathrm{EN}}\le 1.2$) | yes |
+| all $X\le 1.2$ | yes |
 | UNK | 0 |
 
-## \(X\) / \(T\) / \(D\)
+## $X$ / $T$ / $D$
 
-| Lang | \(D\) | \(T\) | \(X\) |
+| Lang | $D$ | $T$ | $X$ |
 |------|------:|------:|------:|
 | EN | 30 789 | 35 649 | 1.15785 |
 | HI | 13 630 | 14 788 | 1.08496 |

@@ -1,6 +1,6 @@
 # Approach B — Language-balanced / fair / minimax BPE
 
-> **Resilience design (all \(X_L \le 1.2\), cross-dataset):**  
+> **Resilience design (all $X_L \le 1.2$, cross-dataset):**  
 > see [`RESILIENCE_X_LE_1_2.md`](RESILIENCE_X_LE_1_2.md)  
 > **Optimized trainer (current global-savings B):** `train_optimized_b.py`
 

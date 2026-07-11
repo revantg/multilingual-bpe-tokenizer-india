@@ -11,7 +11,7 @@
 
 ## 0. Executive verdict (one paragraph)
 
-The full_md retrain **replicates the same loophole map**, with thinner EN than `data/raw` (10307 vs 12328) and the same structural win conditions. Under **words** denom, whole-word inventory (C, B-with-fill, E primary) still hits **exact \(X_i=1 \Rightarrow\) score = ∞** because union unique 7560 fits under 10k. Under the same denom, D + champion still **short-circuit on exact page string** and return planned equal-rate spans \(T^*=(1117,879,250,167)\) → score **~1.41×10⁸** (not BPE). Under **fixed-5000**, C/B-fill/E-primary all **fail hard** with \(X_{EN}=10307/5000=2.0614 > 1.2\); only packing (D/champion) posts `hard_ok_fixed=True` among high scorers — and that is still the packing oracle, not a tokenizer. **Honest pure word-interior BPE (A)** is the only real subword system on the board: score_words **~2384**, hard_ok_words **True**, hard_ok_fixed **False**. Table ranking this time places ∞ above packing (correct math vs old SWARM sin), but B’s *primary* is still whole-word fill marketed as “fair BPE.” **Oral-safe answer remains: metric is trivial once types fit; pure BPE ~2.4k; packing is a page-identity score oracle.**
+The full_md retrain **replicates the same loophole map**, with thinner EN than `data/raw` (10307 vs 12328) and the same structural win conditions. Under **words** denom, whole-word inventory (C, B-with-fill, E primary) still hits **exact $X_i=1 \Rightarrow$ score = ∞** because union unique 7560 fits under 10k. Under the same denom, D + champion still **short-circuit on exact page string** and return planned equal-rate spans $T^*=(1117,879,250,167)$ → score **~1.41×10⁸** (not BPE). Under **fixed-5000**, C/B-fill/E-primary all **fail hard** with $X_{EN}=10307/5000=2.0614 > 1.2$; only packing (D/champion) posts `hard_ok_fixed=True` among high scorers — and that is still the packing oracle, not a tokenizer. **Honest pure word-interior BPE (A)** is the only real subword system on the board: score_words **~2384**, hard_ok_words **True**, hard_ok_fixed **False**. Table ranking this time places ∞ above packing (correct math vs old SWARM sin), but B’s *primary* is still whole-word fill marketed as “fair BPE.” **Oral-safe answer remains: metric is trivial once types fit; pure BPE ~2.4k; packing is a page-identity score oracle.**
 
 ---
 
@@ -19,7 +19,7 @@ The full_md retrain **replicates the same loophole map**, with thinner EN than `
 
 From `full_md/STATS.json` + harness re-count (`clean_text` + `WORD_RE`):
 
-| Lang | total_words \(D_i\) | unique | chars_cleaned |
+| Lang | total_words $D_i$ | unique | chars_cleaned |
 |------|-------------------:|-------:|--------------:|
 | EN | **10307** | 3122 | 64856 |
 | HI | **8111** | 2276 | 43527 |
@@ -32,8 +32,8 @@ From `full_md/STATS.json` + harness re-count (`clean_text` + `WORD_RE`):
 
 Hard gates (as implemented in `run_all.py` / harness):
 
-- `hard_ok_words`: \(X_{EN} ≤ 1.2\) under words denom **and** vocab ≤ 10000  
-- `hard_ok_fixed`: \(X_{EN} ≤ 1.2\) under fixed \(D=5000\) **and** vocab ≤ 10000  
+- `hard_ok_words`: $X_{EN} ≤ 1.2$ under words denom **and** vocab ≤ 10000  
+- `hard_ok_fixed`: $X_{EN} ≤ 1.2$ under fixed $D=5000$ **and** vocab ≤ 10000  
 - score = `1000 / (maxX − minX)` ; gap < 1e-15 → **inf**
 
 ---
@@ -55,23 +55,23 @@ Spot-checks run for this review:
 
 | Probe | Result |
 |-------|--------|
-| C: `encode(page)` length | \(T_i = D_i\) all langs |
+| C: `encode(page)` length | $T_i = D_i$ all langs |
 | C: novel “quick brown fox…” | Many chars OOV (`q,u,i,c,k…`); not a fluent subword model |
-| D: exact page | \(T = T^*\) |
-| D: page + trailing space | Identity breaks → falls back to `extract_words` → \(T=D_i\) |
-| D: first EN span | ~9-word contiguous tablet (avg \(10307/1117 ≈ 9.23\)) — **document chunk**, not merge |
+| D: exact page | $T = T^*$ |
+| D: page + trailing space | Identity breaks → falls back to `extract_words` → $T=D_i$ |
+| D: first EN span | ~9-word contiguous tablet (avg $10307/1117 ≈ 9.23$) — **document chunk**, not merge |
 | A X recalc from T | score_words **2384.4505** matches JSON |
 
-### Cal lout (task §4): under fixed-5000, does C fail \(X_{EN}≤1.2\)?
+### Cal lout (task §4): under fixed-5000, does C fail $X_{EN}≤1.2$?
 
 **YES.**
 
-\[
+$$
 X_{EN}^{fixed} = T_{EN}/5000 = 10307/5000 = \mathbf{2.0614} > 1.2
-\]
+$$
 
 `hard_ok_fixed = false` for C, and for **any** method that returns one token per word on these pages (B-fill, E-primary share the same T).  
-Only packing (and champion’s packed page path) gets \(X_{EN}^{fixed}=0.2234≤1.2\) among the high-score board entries — by returning far fewer than \(D_{EN}\) tokens via multi-word slabs.
+Only packing (and champion’s packed page path) gets $X_{EN}^{fixed}=0.2234≤1.2$ among the high-score board entries — by returning far fewer than $D_{EN}$ tokens via multi-word slabs.
 
 ---
 
@@ -84,7 +84,7 @@ Only packing (and champion’s packed page path) gets \(X_{EN}^{fixed}=0.2234≤
 | **Rank packing above ∞** | **No** (improved vs old SWARM) | `RESULTS_TABLE` ranks B/C/E inf at ranks 1–3, D/champ ~1.41e8 after |
 | **Primary = gamed variant** | **YES for B/E** | B notes include merges-only (finite) but primary = whole-word fill; E primary = inventory, compressed relegated to notes |
 | **Residual vocab cosplay** | **YES for champion** | 7407 leftover words + chars never touch `T` on scored pages |
-| **Denom shopping** | **Visible** | D maximizes score under **words** equal-X; then *also* looks strong under fixed only because \(T≪D\); inventory wins words-∞ and dies on fixed hard |
+| **Denom shopping** | **Visible** | D maximizes score under **words** equal-X; then *also* looks strong under fixed only because $T≪D$; inventory wins words-∞ and dies on fixed hard |
 
 **Softcoding verdict:** D/champion = engineered page packing. B/E primaries soft-code the infinite word-identity answer while retaining “BPE/hybrid” labels. A is clean of both cheats in this retrain. C is unapologetic inventory (honest about method, metric-gaming by definition of the score).
 
@@ -112,13 +112,13 @@ Only packing (and champion’s packed page path) gets \(X_{EN}^{fixed}=0.2234≤
 
 **A — pure BPE**  
 - Merges=9801, encode **dp** slightly beats merge (2384 vs 2319).  
-- Gap_words ≈ 0.42; TE/SA fertility still worst (\(X≈1.53\)).  
-- Fixed: \(X_{EN}=2.40\) — hard fail (subword still returns >6000 EN tokens).  
+- Gap_words ≈ 0.42; TE/SA fertility still worst ($X≈1.53$).  
+- Fixed: $X_{EN}=2.40$ — hard fail (subword still returns >6000 EN tokens).  
 - **This retrain’s A is cleaner than old shipped A** (old HQ was closure ∞; pure was buried at ~2247 on raw).
 
 **B — fair BPE**  
-- Merges-only: scientifically interesting, **fails** \(X_{EN}≤1.2\).  
-- With fill: vocab 8274, \(T=D\), score inf — **functionally C**.  
+- Merges-only: scientifically interesting, **fails** $X_{EN}≤1.2$.  
+- With fill: vocab 8274, $T=D$, score inf — **functionally C**.  
 - Selecting fill as primary is the softcoding problem.
 
 **C — whole words**  
@@ -128,14 +128,14 @@ Only packing (and champion’s packed page path) gets \(X_{EN}^{fixed}=0.2234≤
 - Not BPE; still the correct solution if metric is word-fertility fairness on this closed corpus.
 
 **D — packing**  
-- \(T^*\) search intentionally maximizes words-score under near-equal \(X≈0.10837\).  
+- $T^*$ search intentionally maximizes words-score under near-equal $X≈0.10837$.  
 - Vocab_spans only **2413** < 10k.  
 - Collapse under any page mutation (trailing space verified).  
 - Fixed score 5263 looks “best numeric” only because other methods either fail hard or keep large T.
 
 **E — hybrid**  
 - Primary = C.  
-- Compressed ref score_words ~16.8k (old raw compressed ~183k was tighter equalization at \(X≈0.5\)); still the best **non-identity, non-pack** finite compress attempt recomputed here.
+- Compressed ref score_words ~16.8k (old raw compressed ~183k was tighter equalization at $X≈0.5$); still the best **non-identity, non-pack** finite compress attempt recomputed here.
 
 **Champion**  
 - Same T/score as D. Extra words do not change page T. Same oral death as D.
@@ -160,8 +160,8 @@ Do **not** claim “full Downloads unique inventory covered under 10k.” Claim 
 
 | Rank | Name | vocab | score_words | hard_ok_w | X_words sketch |
 |-----:|------|------:|------------:|:---------:|----------------|
-| 1–3 (tie ∞) | **B fill / C / E primary** | ~7.7–8.3k | **inf** | True | all \(X=1\) |
-| 4–5 (tie) | **D / champion** | 2413 / 10k | **1.407e8** | True | \(X≈0.10837\) |
+| 1–3 (tie ∞) | **B fill / C / E primary** | ~7.7–8.3k | **inf** | True | all $X=1$ |
+| 4–5 (tie) | **D / champion** | 2413 / 10k | **1.407e8** | True | $X≈0.10837$ |
 | 6 | **A pure** | 10k | **2384** | True | 1.16 / 1.12 / 1.53 / 1.54 |
 
 *If ranking forbids whole-word dumps & packing:* **A wins among survivors.**  
@@ -169,13 +169,13 @@ Do **not** claim “full Downloads unique inventory covered under 10k.” Claim 
 
 ### By score_fixed
 
-| Rank | Name | score_fixed | hard_ok_f | \(X_{EN}^{fixed}\) |
+| Rank | Name | score_fixed | hard_ok_f | $X_{EN}^{fixed}$ |
 |-----:|------|------------:|:---------:|-------------------:|
 | 1–2 | **D / champion** | **5263.16** | **True** | 0.2234 |
 | 3–5 | B fill / C / E primary | 570.39 | **False** | **2.0614** |
 | 6 | A pure | 518.73 | False | 2.4012 |
 
-**Takeaway:** fixed denom + hard \(X_{EN}≤1.2\) **outlaws honest inventories** on a page longer than 6000 tokens-worth of words (\(D_{EN}=10307\)). That pushes the board toward packing/mega-spans if you chase the numeric hard gate under fixed — which is a **metric design bug**, not a tokenization breakthrough.
+**Takeaway:** fixed denom + hard $X_{EN}≤1.2$ **outlaws honest inventories** on a page longer than 6000 tokens-worth of words ($D_{EN}=10307$). That pushes the board toward packing/mega-spans if you chase the numeric hard gate under fixed — which is a **metric design bug**, not a tokenization breakthrough.
 
 ---
 
@@ -183,7 +183,7 @@ Do **not** claim “full Downloads unique inventory covered under 10k.” Claim 
 
 **Say this (survive TA):**
 
-> On cleaned full article bodies, unique words across EN/HI/TE/SA total 7560 < 10k, so a whole-word vocabulary gives \(T_i=D_i\), \(X_i=1\), and **infinite** fairness score under tokens-per-word — the metric is trivial on this closed set. Under fixed \(D_i=5000\), that same inventory has \(X_{EN}≈2.06\) and **fails** the stated hard cap \(X_{EN}≤1.2\). Pure word-interior BPE (no whole-word closure) reaches **~2.4k** fairness under words with \(X_{EN}≈1.16≤1.2\); TE/SA remain more fragmented. Equal-X page packing scores ~**1.4×10⁸** by returning planned multi-word slabs only when `text` equals the training page; one trailing space collapses it. We treat packing as an oracle upper bound, not a BPE submission.
+> On cleaned full article bodies, unique words across EN/HI/TE/SA total 7560 < 10k, so a whole-word vocabulary gives $T_i=D_i$, $X_i=1$, and **infinite** fairness score under tokens-per-word — the metric is trivial on this closed set. Under fixed $D_i=5000$, that same inventory has $X_{EN}≈2.06$ and **fails** the stated hard cap $X_{EN}≤1.2$. Pure word-interior BPE (no whole-word closure) reaches **~2.4k** fairness under words with $X_{EN}≈1.16≤1.2$; TE/SA remain more fragmented. Equal-X page packing scores ~**1.4×10⁸** by returning planned multi-word slabs only when `text` equals the training page; one trailing space collapses it. We treat packing as an oracle upper bound, not a BPE submission.
 
 **Do not lead with** champion 1.41e8 or “B fair infinite” without the loophole labels.  
 **Chalkboard max only if** explicitly labeled packing oracle / words-identity maximizer.
@@ -201,10 +201,10 @@ Do **not** claim “full Downloads unique inventory covered under 10k.” Claim 
 
 ## 8. Bottom line
 
-1. **T check:** C/B-fill/E-primary \(T=D\); D/champ \(T=T^*\) planned; A subword \(T>D\). All consistent with claimed mechanics.  
+1. **T check:** C/B-fill/E-primary $T=D$; D/champ $T=T^*$ planned; A subword $T>D$. All consistent with claimed mechanics.  
 2. **Gaming still present:** packing short-circuit + whole-word ∞ primary on B/E.  
 3. **Honesty stars:** C ~9, A ~8, E-compressed ~7, D ~5–6, B-fill/E-primary/champ ~3.  
-4. **Fixed-5000 C fail:** **confirmed** \(X_{EN}≈2.0614 > 1.2\).  
+4. **Fixed-5000 C fail:** **confirmed** $X_{EN}≈2.0614 > 1.2$.  
 5. **Conversion identity:** not fraudulently thinned for 10k; body-without-refs still enables free ∞.  
 6. **Oral:** metric trivial + pure BPE ~2.4k + packing = page oracle.
 

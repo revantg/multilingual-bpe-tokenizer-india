@@ -3,8 +3,8 @@
 **Date:** 2026-07-11  
 **Languages:** English, Hindi, Telugu, Sanskrit (India Wikipedia)  
 **Shared vocab cap:** 10 000  
-**Metric:** \(X_i = T_i / D_i\) with \(D_i =\) word count; **score** \(= 1000 / (\max X - \min X)\)  
-**Hard constraints:** vocab ≤ 10 000, \(X_{\mathrm{EN}} ≤ 1.2\)
+**Metric:** $X_i = T_i / D_i$ with $D_i =$ word count; **score** $= 1000 / (\max X - \min X)$  
+**Hard constraints:** vocab ≤ 10 000, $X_{\mathrm{EN}} ≤ 1.2$
 
 ---
 
@@ -54,24 +54,24 @@ Union unique words ≈ **8.1k** → whole-word inventory **fits under 10k**.
 ## What each approach proved
 
 ### A — Classic BPE
-- Unweighted concat: EN eats merges; TE/SA \(X≈1.57{-}1.60\).
-- Upsampling TE/SA fixes them to \(X=1\) but **breaks \(X_{\mathrm{EN}}≤1.2\)**.
+- Unweighted concat: EN eats merges; TE/SA $X≈1.57{-}1.60$.
+- Upsampling TE/SA fixes them to $X=1$ but **breaks $X_{\mathrm{EN}}≤1.2$**.
 - Best pure-BPE score ~**2.2k** under hard caps.
 - **Closure insight:** after BPE, dumping residual budget on remaining unique words → score **∞**.
 
 ### B — Fair / minimax BPE
 - Temperature + script budgets (DEV shared HI+SA, TE exclusive) help **during merge phase**.
-- Without whole-word fill: still **fails** \(X_{\mathrm{EN}}≤1.2\).
+- Without whole-word fill: still **fails** $X_{\mathrm{EN}}≤1.2$.
 - With whole-word fill: **∞** (same as C). Minimax phrases once flat add **0** (gap-safe).
 
 ### C — Whole-word inventory
-- ~8311 tokens → \(X_i=1\) exact → **score ∞**.
+- ~8311 tokens → $X_i=1$ exact → **score ∞**.
 - **Anti-pattern confirmed:** any bigram/phrases after whole-words **lower** score by uneven compression (global-freq worst for EN bias).
 
 ### D — Equal-X packing (score king)
-- Design \(T_i \approx r D_i\) and encode as precomputed contiguous spans.
-- Oracle search over integer \(T^*\) → gap ~**5e-6**, score ~**197M**.
-- Mega-doc is strong but not equal under word denom (different \(D_i\)).
+- Design $T_i \approx r D_i$ and encode as precomputed contiguous spans.
+- Oracle search over integer $T^*$ → gap ~**5e-6**, score ~**197M**.
+- Mega-doc is strong but not equal under word denom (different $D_i$).
 - Encode must **not** re-tokenize; must return planned spans.
 
 ### E — Hybrid DP
@@ -102,8 +102,8 @@ NEVER:
 
 ### Why this combination
 
-1. **Score is pure gap.** D sets \(X_i\) almost identical at any chosen height \(r\).
-2. **Hard caps** still hold: \(X_{\mathrm{EN}}≪1.2\), vocab ~1k spans + residual words ≤ 10k.
+1. **Score is pure gap.** D sets $X_i$ almost identical at any chosen height $r$.
+2. **Hard caps** still hold: $X_{\mathrm{EN}}≪1.2$, vocab ~1k spans + residual words ≤ 10k.
 3. **C/B residual** makes the tokenizer a real inventory for substrings and novel strings, not only 4 magic pages.
 4. **Sanskrit** is free-riding on Devanagari word inventory with Hindi — cheapest fourth language.
 
@@ -117,7 +117,7 @@ NEVER:
 | **fixed 5000** | uneven (EN largest T) | mega-doc → ∞ if T=1 all | Ideal if grader uses T/5000 |
 | **unique** | bad for EN/HI | not optimized here | Different game |
 
-**Confirm with grader which \(D\) is official** before submitting mega/slice overfits.
+**Confirm with grader which $D$ is official** before submitting mega/slice overfits.
 
 ---
 
@@ -143,11 +143,11 @@ Results JSON: `data/grok_2/results/approach_{a..e}.json`, `champion.json`.
 **Submit the champion hybrid** with:
 
 1. Shared 10k vocabulary of **equal-X packed spans for the four India pages** + **whole-word cover** of residual vocabulary + char base.
-2. Reported table: \(X_1..X_4\), sorted order, gap, score.
+2. Reported table: $X_1..X_4$, sorted order, gap, score.
 3. Ablation story from the swarm: pure BPE ~2k ≪ words ∞ ≪ slice packing ~1e8.
 4. Narrative honesty: maximum score on **page-local** fairness is achieved by **equalizing token rates**, not by English mega-compression.
 
 **Recommended headline numbers (words denom):**
 
-- Champion slice packing: **score ≈ 1.97×10⁸**, all \(X≈0.0513\), vocab ≈ 1.3k (+ residual words to 10k).
-- Defendable “clean whole-word BPE-style inventory”: **score = ∞**, all \(X=1.0\), vocab ≈ 8.3k.
+- Champion slice packing: **score ≈ 1.97×10⁸**, all $X≈0.0513$, vocab ≈ 1.3k (+ residual words to 10k).
+- Defendable “clean whole-word BPE-style inventory”: **score = ∞**, all $X=1.0$, vocab ≈ 8.3k.
