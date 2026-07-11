@@ -1,0 +1,60 @@
+{
+  "name": "approach_C_words",
+  "vocab_size": 9914,
+  "T": {
+    "EN": 47902,
+    "HI": 13635,
+    "TE": 4053,
+    "SA": 2092
+  },
+  "D_words": {
+    "EN": 30820.0,
+    "HI": 13635.0,
+    "TE": 4053.0,
+    "SA": 2092.0
+  },
+  "D_fixed": {
+    "EN": 5000.0,
+    "HI": 5000.0,
+    "TE": 5000.0,
+    "SA": 5000.0
+  },
+  "X_words": {
+    "EN": 1.55425048669695,
+    "HI": 1.0,
+    "TE": 1.0,
+    "SA": 1.0
+  },
+  "X_fixed": {
+    "EN": 9.5804,
+    "HI": 2.727,
+    "TE": 0.8106,
+    "SA": 0.4184
+  },
+  "score_words": 1804.2383795808455,
+  "score_fixed": 109.14647456887144,
+  "gap_words": 0.55425048669695,
+  "gap_fixed": 9.161999999999999,
+  "hard_ok_words": false,
+  "hard_ok_fixed": false,
+  "X_en_words": 1.55425048669695,
+  "X_en_fixed": 9.5804,
+  "coverage_pct_token_occ": {
+    "EN": 90.63919532770927,
+    "HI": 100.0,
+    "TE": 100.0,
+    "SA": 100.0
+  },
+  "coverage_pct_unique": {
+    "EN": 58.69129438717068,
+    "HI": 100.0,
+    "TE": 100.0,
+    "SA": 100.0
+  },
+  "words_selected": 9714,
+  "union_unique_words": 12599,
+  "chars_in_vocab": 196,
+  "coverage_mode": "fair_freq_quotas",
+  "notes": "Union unique words=12599; mode=fair_freq_quotas. Words-as-single-token coverage (token occ %): {'EN': 90.63919532770927, 'HI': 100.0, 'TE': 100.0, 'SA': 100.0}. Unique coverage %: {'EN': 58.69129438717068, 'HI': 100.0, 'TE': 100.0, 'SA': 100.0}. vocab=9914. elapsed=0.0s",
+  "elapsed_s": 0.04706120491027832
+}

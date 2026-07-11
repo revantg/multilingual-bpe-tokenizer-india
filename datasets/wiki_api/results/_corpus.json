@@ -1,0 +1,26 @@
+{
+  "stats": {
+    "EN": {
+      "chars": 65327,
+      "words": 10336,
+      "unique": 3131
+    },
+    "HI": {
+      "chars": 43796,
+      "words": 8140,
+      "unique": 2288
+    },
+    "TE": {
+      "chars": 20012,
+      "words": 2531,
+      "unique": 1562
+    },
+    "SA": {
+      "chars": 12701,
+      "words": 1557,
+      "unique": 920
+    },
+    "union_unique_words": 7680
+  },
+  "source": "wikipedia_api_extracts"
+}

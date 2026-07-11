@@ -1,0 +1,129 @@
+{
+  "name": "approach_e_hybrid",
+  "denom_mode": "words",
+  "T": {
+    "EN": 12328.0,
+    "HI": 8141.0,
+    "TE": 2532.0,
+    "SA": 1558.0
+  },
+  "D": {
+    "EN": 12328.0,
+    "HI": 8141.0,
+    "TE": 2532.0,
+    "SA": 1558.0
+  },
+  "X": {
+    "EN": 1.0,
+    "HI": 1.0,
+    "TE": 1.0,
+    "SA": 1.0
+  },
+  "gap": 0.0,
+  "score": "inf",
+  "vocab_size": 10000,
+  "X_en_le_1_2": true,
+  "vocab_ok": true,
+  "hard_ok": true,
+  "sorted_X": [
+    [
+      "EN",
+      1.0
+    ],
+    [
+      "HI",
+      1.0
+    ],
+    [
+      "TE",
+      1.0
+    ],
+    [
+      "SA",
+      1.0
+    ]
+  ],
+  "fixed_denom": {
+    "T": {
+      "EN": 12328,
+      "HI": 8141,
+      "TE": 2532,
+      "SA": 1558
+    },
+    "X": {
+      "EN": 2.4656,
+      "HI": 1.6282,
+      "TE": 0.5064,
+      "SA": 0.3116
+    },
+    "gap": 2.154,
+    "score": 464.25255338904367,
+    "hard_ok": false
+  },
+  "unique_denom": {
+    "T": {
+      "EN": 12328,
+      "HI": 8141,
+      "TE": 2532,
+      "SA": 1558
+    },
+    "X": {
+      "EN": 3.439732142857143,
+      "HI": 3.558129370629371,
+      "TE": 1.6209987195902689,
+      "SA": 1.6934782608695653
+    },
+    "gap": 1.937130651039102,
+    "score": 516.2274415840702
+  },
+  "compressed_equalized_ref": {
+    "T": {
+      "EN": 6223,
+      "HI": 4065,
+      "TE": 1266,
+      "SA": 779
+    },
+    "X": {
+      "EN": 0.5047858533419857,
+      "HI": 0.49932440732096794,
+      "TE": 0.5,
+      "SA": 0.5
+    },
+    "gap": 0.005461446021017724,
+    "score": 183101.69067891894,
+    "vocab_size": 10000,
+    "hard_ok": true
+  },
+  "approach": "E hybrid assembly + Unigram-style DP encode",
+  "components": [
+    "character+script bases (Latin/Devanagari/Telugu/digits/punct)",
+    "all unique whole-words (shared Devanagari HI\u222aSA)",
+    "residual char n-grams for OOV robustness",
+    "language-capped multiword n-grams (compressed ref)",
+    "DP min-token cover over pretok word sequence"
+  ],
+  "config": {
+    "strategy": "max_score_words"
+  },
+  "build_meta": {
+    "strategy": "bases+all_words+char_ngram_fill",
+    "n_base": 371,
+    "n_words": 8066,
+    "n_char_ngrams": 1563,
+    "vocab_size": 10000,
+    "T": {
+      "EN": 12328,
+      "HI": 8141,
+      "TE": 2532,
+      "SA": 1558
+    },
+    "X": {
+      "EN": 1.0,
+      "HI": 1.0,
+      "TE": 1.0,
+      "SA": 1.0
+    },
+    "gap": 0.0,
+    "score": "inf"
+  }
+}

@@ -1,0 +1,422 @@
+{
+  "name": "approach_a/word_bpe_closure",
+  "denom_mode": "words",
+  "T": {
+    "EN": 12328.0,
+    "HI": 8141.0,
+    "TE": 2532.0,
+    "SA": 1558.0
+  },
+  "D": {
+    "EN": 12328.0,
+    "HI": 8141.0,
+    "TE": 2532.0,
+    "SA": 1558.0
+  },
+  "X": {
+    "EN": 1.0,
+    "HI": 1.0,
+    "TE": 1.0,
+    "SA": 1.0
+  },
+  "gap": 0.0,
+  "score": "inf",
+  "vocab_size": 9453,
+  "X_en_le_1_2": true,
+  "vocab_ok": true,
+  "hard_ok": true,
+  "sorted_X": [
+    [
+      "EN",
+      1.0
+    ],
+    [
+      "HI",
+      1.0
+    ],
+    [
+      "TE",
+      1.0
+    ],
+    [
+      "SA",
+      1.0
+    ]
+  ],
+  "fixed": {
+    "X": {
+      "EN": 2.4656,
+      "HI": 1.6282,
+      "TE": 0.5064,
+      "SA": 0.3116
+    },
+    "T": {
+      "EN": 12328,
+      "HI": 8141,
+      "TE": 2532,
+      "SA": 1558
+    },
+    "gap": 2.154,
+    "score": 464.25255338904367
+  },
+  "mode": "word_bpe_closure",
+  "description": "word BPE merges + whole-word closure into leftover slots",
+  "encode_mode": "dp",
+  "bpe_budget": 2000,
+  "best_mode": "word_bpe_closure",
+  "variants": [
+    {
+      "mode": "pure_concat",
+      "vocab_size": 10000,
+      "bpe_budget": null,
+      "min_freq": 1,
+      "encode_mode": "merge",
+      "score": 2112.816328733516,
+      "gap": 0.47330190816890805,
+      "X": {
+        "EN": 1.177968851395198,
+        "HI": 1.1396634320108094,
+        "TE": 1.5710900473933649,
+        "SA": 1.6129653401797175
+      },
+      "T": {
+        "EN": 14522.0,
+        "HI": 9278.0,
+        "TE": 3978.0,
+        "SA": 2513.0
+      },
+      "hard_ok": true,
+      "X_en_le_1_2": true,
+      "fixed_score": 416.3544008660172,
+      "fixed_X": {
+        "EN": 2.9044,
+        "HI": 1.8556,
+        "TE": 0.7956,
+        "SA": 0.5026
+      },
+      "description": "pure concat unweighted (units include punct)"
+    },
+    {
+      "mode": "upsample",
+      "vocab_size": 10000,
+      "bpe_budget": null,
+      "min_freq": 1,
+      "encode_mode": "merge",
+      "score": 2486.4864864864862,
+      "gap": 0.40217391304347827,
+      "X": {
+        "EN": 1.4021739130434783,
+        "HI": 1.1981329075052205,
+        "TE": 1.0,
+        "SA": 1.0
+      },
+      "T": {
+        "EN": 17286.0,
+        "HI": 9754.0,
+        "TE": 2532.0,
+        "SA": 1558.0
+      },
+      "hard_ok": false,
+      "X_en_le_1_2": false,
+      "fixed_score": 317.90437436419126,
+      "fixed_X": {
+        "EN": 3.4572,
+        "HI": 1.9508,
+        "TE": 0.5064,
+        "SA": 0.3116
+      },
+      "description": "upsample units to char-mass~66198"
+    },
+    {
+      "mode": "word_bpe",
+      "vocab_size": 10000,
+      "bpe_budget": null,
+      "min_freq": 1,
+      "encode_mode": "merge",
+      "score": 2174.6920051121306,
+      "gap": 0.4598352307587752,
+      "X": {
+        "EN": 1.177968851395198,
+        "HI": 1.1370838963272325,
+        "TE": 1.5710900473933649,
+        "SA": 1.5969191270860077
+      },
+      "T": {
+        "EN": 14522.0,
+        "HI": 9257.0,
+        "TE": 3978.0,
+        "SA": 2488.0
+      },
+      "hard_ok": true,
+      "X_en_le_1_2": true,
+      "fixed_score": 415.4894465680572,
+      "fixed_X": {
+        "EN": 2.9044,
+        "HI": 1.8514,
+        "TE": 0.7956,
+        "SA": 0.4976
+      },
+      "description": "regex words then BPE inside words"
+    },
+    {
+      "mode": "word_bpe_upsample",
+      "vocab_size": 10000,
+      "bpe_budget": null,
+      "min_freq": 1,
+      "encode_mode": "merge",
+      "score": 2502.639058059278,
+      "gap": 0.39957819597663846,
+      "X": {
+        "EN": 1.3995781959766385,
+        "HI": 1.194447856528682,
+        "TE": 1.0,
+        "SA": 1.0
+      },
+      "T": {
+        "EN": 17254.0,
+        "HI": 9724.0,
+        "TE": 2532.0,
+        "SA": 1558.0
+      },
+      "hard_ok": false,
+      "X_en_le_1_2": false,
+      "fixed_score": 318.55249745158,
+      "fixed_X": {
+        "EN": 3.4508,
+        "HI": 1.9448,
+        "TE": 0.5064,
+        "SA": 0.3116
+      },
+      "description": "word BPE + upsample smaller langs"
+    },
+    {
+      "mode": "word_bpe",
+      "vocab_size": 8000,
+      "bpe_budget": null,
+      "min_freq": 1,
+      "encode_mode": "merge",
+      "score": 1819.9866410392729,
+      "gap": 0.5494545824957082,
+      "X": {
+        "EN": 1.2491077222582738,
+        "HI": 1.194447856528682,
+        "TE": 1.7397314375987363,
+        "SA": 1.7439024390243902
+      },
+      "T": {
+        "EN": 15399.0,
+        "HI": 9724.0,
+        "TE": 4405.0,
+        "SA": 2717.0
+      },
+      "hard_ok": false,
+      "X_en_le_1_2": false,
+      "fixed_score": 394.25958050780633,
+      "fixed_X": {
+        "EN": 3.0798,
+        "HI": 1.9448,
+        "TE": 0.881,
+        "SA": 0.5434
+      },
+      "description": "regex words then BPE inside words"
+    },
+    {
+      "mode": "word_bpe",
+      "vocab_size": 7443,
+      "bpe_budget": null,
+      "min_freq": 2,
+      "encode_mode": "merge",
+      "score": 1792.5092410306543,
+      "gap": 0.5578771797154147,
+      "X": {
+        "EN": 1.2650876054510058,
+        "HI": 1.2213487286574132,
+        "TE": 1.779225908372828,
+        "SA": 1.7702182284980745
+      },
+      "T": {
+        "EN": 15596.0,
+        "HI": 9943.0,
+        "TE": 4505.0,
+        "SA": 2758.0
+      },
+      "hard_ok": false,
+      "X_en_le_1_2": false,
+      "fixed_score": 389.46876460507866,
+      "fixed_X": {
+        "EN": 3.1192,
+        "HI": 1.9886,
+        "TE": 0.901,
+        "SA": 0.5516
+      },
+      "description": "regex words then BPE inside words"
+    },
+    {
+      "mode": "word_bpe",
+      "vocab_size": 10000,
+      "bpe_budget": null,
+      "min_freq": 1,
+      "encode_mode": "dp",
+      "score": 2247.2430531956697,
+      "gap": 0.44498969462958615,
+      "X": {
+        "EN": 1.1725340687865022,
+        "HI": 1.1352413708389633,
+        "TE": 1.561216429699842,
+        "SA": 1.5802310654685494
+      },
+      "T": {
+        "EN": 14455.0,
+        "HI": 9242.0,
+        "TE": 3953.0,
+        "SA": 2462.0
+      },
+      "hard_ok": true,
+      "X_en_le_1_2": true,
+      "fixed_score": 416.9098640873843,
+      "fixed_X": {
+        "EN": 2.891,
+        "HI": 1.8484,
+        "TE": 0.7906,
+        "SA": 0.4924
+      },
+      "description": "regex words then BPE inside words"
+    },
+    {
+      "mode": "word_bpe_closure",
+      "vocab_size": 9453,
+      "bpe_budget": 2000,
+      "min_freq": 1,
+      "encode_mode": "dp",
+      "score": "inf",
+      "gap": 0.0,
+      "X": {
+        "EN": 1.0,
+        "HI": 1.0,
+        "TE": 1.0,
+        "SA": 1.0
+      },
+      "T": {
+        "EN": 12328.0,
+        "HI": 8141.0,
+        "TE": 2532.0,
+        "SA": 1558.0
+      },
+      "hard_ok": true,
+      "X_en_le_1_2": true,
+      "fixed_score": 464.25255338904367,
+      "fixed_X": {
+        "EN": 2.4656,
+        "HI": 1.6282,
+        "TE": 0.5064,
+        "SA": 0.3116
+      },
+      "description": "word BPE merges + whole-word closure into leftover slots"
+    },
+    {
+      "mode": "word_bpe_closure",
+      "vocab_size": 8480,
+      "bpe_budget": 500,
+      "min_freq": 1,
+      "encode_mode": "dp",
+      "score": "inf",
+      "gap": 0.0,
+      "X": {
+        "EN": 1.0,
+        "HI": 1.0,
+        "TE": 1.0,
+        "SA": 1.0
+      },
+      "T": {
+        "EN": 12328.0,
+        "HI": 8141.0,
+        "TE": 2532.0,
+        "SA": 1558.0
+      },
+      "hard_ok": true,
+      "X_en_le_1_2": true,
+      "fixed_score": 464.25255338904367,
+      "fixed_X": {
+        "EN": 2.4656,
+        "HI": 1.6282,
+        "TE": 0.5064,
+        "SA": 0.3116
+      },
+      "description": "word BPE merges + whole-word closure into leftover slots"
+    },
+    {
+      "mode": "word_bpe_closure",
+      "vocab_size": 10000,
+      "bpe_budget": 3000,
+      "min_freq": 1,
+      "encode_mode": "dp",
+      "score": 70818.18181818146,
+      "gap": 0.01412066752246477,
+      "X": {
+        "EN": 1.0,
+        "HI": 1.0,
+        "TE": 1.0,
+        "SA": 1.0141206675224648
+      },
+      "T": {
+        "EN": 12328.0,
+        "HI": 8141.0,
+        "TE": 2532.0,
+        "SA": 1580.0
+      },
+      "hard_ok": true,
+      "X_en_le_1_2": true,
+      "fixed_score": 465.2028284331969,
+      "fixed_X": {
+        "EN": 2.4656,
+        "HI": 1.6282,
+        "TE": 0.5064,
+        "SA": 0.316
+      },
+      "description": "word BPE merges + whole-word closure into leftover slots"
+    },
+    {
+      "mode": "word_bpe_closure",
+      "vocab_size": 8328,
+      "bpe_budget": 300,
+      "min_freq": 1,
+      "encode_mode": "dp",
+      "score": "inf",
+      "gap": 0.0,
+      "X": {
+        "EN": 1.0,
+        "HI": 1.0,
+        "TE": 1.0,
+        "SA": 1.0
+      },
+      "T": {
+        "EN": 12328.0,
+        "HI": 8141.0,
+        "TE": 2532.0,
+        "SA": 1558.0
+      },
+      "hard_ok": true,
+      "X_en_le_1_2": true,
+      "fixed_score": 464.25255338904367,
+      "fixed_X": {
+        "EN": 2.4656,
+        "HI": 1.6282,
+        "TE": 0.5064,
+        "SA": 0.3116
+      },
+      "description": "word BPE merges + whole-word closure into leftover slots"
+    }
+  ],
+  "best_pure_bpe": {
+    "mode": "word_bpe",
+    "vocab_size": 10000,
+    "score": 2247.2430531956697,
+    "X": {
+      "EN": 1.1725340687865022,
+      "HI": 1.1352413708389633,
+      "TE": 1.561216429699842,
+      "SA": 1.5802310654685494
+    },
+    "gap": 0.44498969462958615
+  }
+}

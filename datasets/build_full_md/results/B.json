@@ -1,0 +1,182 @@
+{
+  "name": "approach_B_fair",
+  "vocab_size": 8274,
+  "T": {
+    "EN": 10307,
+    "HI": 8111,
+    "TE": 2307,
+    "SA": 1541
+  },
+  "D_words": {
+    "EN": 10307.0,
+    "HI": 8111.0,
+    "TE": 2307.0,
+    "SA": 1541.0
+  },
+  "D_fixed": {
+    "EN": 5000.0,
+    "HI": 5000.0,
+    "TE": 5000.0,
+    "SA": 5000.0
+  },
+  "X_words": {
+    "EN": 1.0,
+    "HI": 1.0,
+    "TE": 1.0,
+    "SA": 1.0
+  },
+  "X_fixed": {
+    "EN": 2.0614,
+    "HI": 1.6222,
+    "TE": 0.4614,
+    "SA": 0.3082
+  },
+  "score_words": "inf",
+  "score_fixed": 570.3855806525212,
+  "gap_words": 0.0,
+  "gap_fixed": 1.7531999999999999,
+  "hard_ok_words": true,
+  "hard_ok_fixed": false,
+  "X_en_words": 1.0,
+  "X_en_fixed": 2.0614,
+  "train_meta": {
+    "merges": 800,
+    "vocab_size": 8274,
+    "temperature": 3.0,
+    "variant": "minimax_temp",
+    "elapsed_s": 14.000301122665405
+  },
+  "primary_variant": "with_whole_word_fill",
+  "notes": "Temperature upsample + script budgets + minimax merges. Reports merges-only AND whole-word fill of remaining budget (V<=10000). Primary=with_whole_word_fill. elapsed=73.1s",
+  "variants": {
+    "merges_only": {
+      "vocab_size": 4200,
+      "T": {
+        "EN": 17909,
+        "HI": 12460,
+        "TE": 4189,
+        "SA": 2806
+      },
+      "X_words": {
+        "EN": 1.7375570000970215,
+        "HI": 1.5361854271976327,
+        "TE": 1.8157780667533594,
+        "SA": 1.8208955223880596
+      },
+      "X_fixed": {
+        "EN": 3.5818,
+        "HI": 2.492,
+        "TE": 0.8378,
+        "SA": 0.5612
+      },
+      "score_words": 3512.344721500497,
+      "score_fixed": 331.0600542938489,
+      "hard_ok_words": false,
+      "hard_ok_fixed": false,
+      "train_meta": {
+        "merges": 4000,
+        "vocab_size": 4200,
+        "temperature": 3.0,
+        "variant": "minimax_temp",
+        "elapsed_s": 59.04466772079468
+      }
+    },
+    "with_whole_word_fill": {
+      "vocab_size": 8274,
+      "T": {
+        "EN": 10307,
+        "HI": 8111,
+        "TE": 2307,
+        "SA": 1541
+      },
+      "X_words": {
+        "EN": 1.0,
+        "HI": 1.0,
+        "TE": 1.0,
+        "SA": 1.0
+      },
+      "X_fixed": {
+        "EN": 2.0614,
+        "HI": 1.6222,
+        "TE": 0.4614,
+        "SA": 0.3082
+      },
+      "score_words": "inf",
+      "score_fixed": 570.3855806525212,
+      "hard_ok_words": true,
+      "hard_ok_fixed": false,
+      "train_meta": {
+        "merges": 800,
+        "vocab_size": 8274,
+        "temperature": 3.0,
+        "variant": "minimax_temp",
+        "elapsed_s": 14.000301122665405
+      }
+    }
+  },
+  "merges_only": {
+    "vocab_size": 4200,
+    "T": {
+      "EN": 17909,
+      "HI": 12460,
+      "TE": 4189,
+      "SA": 2806
+    },
+    "X_words": {
+      "EN": 1.7375570000970215,
+      "HI": 1.5361854271976327,
+      "TE": 1.8157780667533594,
+      "SA": 1.8208955223880596
+    },
+    "X_fixed": {
+      "EN": 3.5818,
+      "HI": 2.492,
+      "TE": 0.8378,
+      "SA": 0.5612
+    },
+    "score_words": 3512.344721500497,
+    "score_fixed": 331.0600542938489,
+    "hard_ok_words": false,
+    "hard_ok_fixed": false,
+    "train_meta": {
+      "merges": 4000,
+      "vocab_size": 4200,
+      "temperature": 3.0,
+      "variant": "minimax_temp",
+      "elapsed_s": 59.04466772079468
+    }
+  },
+  "with_whole_word_fill": {
+    "vocab_size": 8274,
+    "T": {
+      "EN": 10307,
+      "HI": 8111,
+      "TE": 2307,
+      "SA": 1541
+    },
+    "X_words": {
+      "EN": 1.0,
+      "HI": 1.0,
+      "TE": 1.0,
+      "SA": 1.0
+    },
+    "X_fixed": {
+      "EN": 2.0614,
+      "HI": 1.6222,
+      "TE": 0.4614,
+      "SA": 0.3082
+    },
+    "score_words": "inf",
+    "score_fixed": 570.3855806525212,
+    "hard_ok_words": true,
+    "hard_ok_fixed": false,
+    "train_meta": {
+      "merges": 800,
+      "vocab_size": 8274,
+      "temperature": 3.0,
+      "variant": "minimax_temp",
+      "elapsed_s": 14.000301122665405
+    }
+  },
+  "elapsed_s": 73.12482523918152
+}

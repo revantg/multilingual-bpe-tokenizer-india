@@ -1,0 +1,22 @@
+{
+  "name": "d_slice_oracle_equalx_v1261",
+  "vocab_size": 1261,
+  "planned_T": {
+    "EN": 633,
+    "HI": 418,
+    "TE": 130,
+    "SA": 80
+  },
+  "r": null,
+  "variant": "slice_oracle_equalx",
+  "score": 197242799.99980137,
+  "gap": 5.069893552520077e-06,
+  "X": {
+    "EN": 0.0513465282284231,
+    "HI": 0.051345043606436554,
+    "TE": 0.05134281200631911,
+    "SA": 0.051347881899871634
+  },
+  "hard_ok": true,
+  "encode_api": "PackedTokenizer.encode(text, lang) -> List[str]"
+}

@@ -1,0 +1,60 @@
+{
+  "name": "approach_C_words",
+  "vocab_size": 7873,
+  "T": {
+    "EN": 10336,
+    "HI": 8140,
+    "TE": 2531,
+    "SA": 1557
+  },
+  "D_words": {
+    "EN": 10336.0,
+    "HI": 8140.0,
+    "TE": 2531.0,
+    "SA": 1557.0
+  },
+  "D_fixed": {
+    "EN": 5000.0,
+    "HI": 5000.0,
+    "TE": 5000.0,
+    "SA": 5000.0
+  },
+  "X_words": {
+    "EN": 1.0,
+    "HI": 1.0,
+    "TE": 1.0,
+    "SA": 1.0
+  },
+  "X_fixed": {
+    "EN": 2.0672,
+    "HI": 1.628,
+    "TE": 0.5062,
+    "SA": 0.3114
+  },
+  "score_words": "inf",
+  "score_fixed": 569.5409499943045,
+  "gap_words": 0.0,
+  "gap_fixed": 1.7558000000000002,
+  "hard_ok_words": true,
+  "hard_ok_fixed": false,
+  "X_en_words": 1.0,
+  "X_en_fixed": 2.0672,
+  "coverage_pct_token_occ": {
+    "EN": 100.0,
+    "HI": 100.0,
+    "TE": 100.0,
+    "SA": 100.0
+  },
+  "coverage_pct_unique": {
+    "EN": 100.0,
+    "HI": 100.0,
+    "TE": 100.0,
+    "SA": 100.0
+  },
+  "words_selected": 7680,
+  "union_unique_words": 7680,
+  "chars_in_vocab": 189,
+  "coverage_mode": "all_unique_words_fit",
+  "notes": "Union unique words=7680; mode=all_unique_words_fit. Words-as-single-token coverage (token occ %): {'EN': 100.0, 'HI': 100.0, 'TE': 100.0, 'SA': 100.0}. Unique coverage %: {'EN': 100.0, 'HI': 100.0, 'TE': 100.0, 'SA': 100.0}. vocab=7873. elapsed=0.0s",
+  "elapsed_s": 0.01950550079345703
+}

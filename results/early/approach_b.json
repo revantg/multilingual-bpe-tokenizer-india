@@ -1,0 +1,176 @@
+{
+  "name": "approach_b",
+  "denom_mode": "words",
+  "T": {
+    "EN": 12328.0,
+    "HI": 8141.0,
+    "TE": 2532.0,
+    "SA": 1558.0
+  },
+  "D": {
+    "EN": 12328.0,
+    "HI": 8141.0,
+    "TE": 2532.0,
+    "SA": 1558.0
+  },
+  "X": {
+    "EN": 1.0,
+    "HI": 1.0,
+    "TE": 1.0,
+    "SA": 1.0
+  },
+  "gap": 0.0,
+  "score": "inf",
+  "vocab_size": 9109,
+  "X_en_le_1_2": true,
+  "vocab_ok": true,
+  "hard_ok": true,
+  "sorted_X": [
+    [
+      "EN",
+      1.0
+    ],
+    [
+      "HI",
+      1.0
+    ],
+    [
+      "TE",
+      1.0
+    ],
+    [
+      "SA",
+      1.0
+    ]
+  ],
+  "approach": "B_language_balanced_minimax_bpe",
+  "best_variant": "full_fair",
+  "fixed5000": {
+    "X": {
+      "EN": 2.4656,
+      "HI": 1.6282,
+      "TE": 0.5064,
+      "SA": 0.3116
+    },
+    "T": {
+      "EN": 12328,
+      "HI": 8141,
+      "TE": 2532,
+      "SA": 1558
+    },
+    "D": {
+      "EN": 5000.0,
+      "HI": 5000.0,
+      "TE": 5000.0,
+      "SA": 5000.0
+    },
+    "gap": 2.154,
+    "score": 464.25255338904367
+  },
+  "variants_summary": [
+    {
+      "name": "full_fair",
+      "score": "inf",
+      "gap": 0.0,
+      "X": {
+        "EN": 1.0,
+        "HI": 1.0,
+        "TE": 1.0,
+        "SA": 1.0
+      },
+      "hard_ok": true,
+      "vocab_size": 9109
+    },
+    {
+      "name": "full_fair_words_only",
+      "score": "inf",
+      "gap": 0.0,
+      "X": {
+        "EN": 1.0,
+        "HI": 1.0,
+        "TE": 1.0,
+        "SA": 1.0
+      },
+      "hard_ok": true,
+      "vocab_size": 8693
+    },
+    {
+      "name": "equal_budget",
+      "score": "inf",
+      "gap": 0.0,
+      "X": {
+        "EN": 1.0,
+        "HI": 1.0,
+        "TE": 1.0,
+        "SA": 1.0
+      },
+      "hard_ok": true,
+      "vocab_size": 8982
+    },
+    {
+      "name": "minimax_temp",
+      "score": "inf",
+      "gap": 0.0,
+      "X": {
+        "EN": 1.0,
+        "HI": 1.0,
+        "TE": 1.0,
+        "SA": 1.0
+      },
+      "hard_ok": true,
+      "vocab_size": 8969
+    },
+    {
+      "name": "vanilla",
+      "score": "inf",
+      "gap": 0.0,
+      "X": {
+        "EN": 1.0,
+        "HI": 1.0,
+        "TE": 1.0,
+        "SA": 1.0
+      },
+      "hard_ok": true,
+      "vocab_size": 8833
+    },
+    {
+      "name": "temp_upsample",
+      "score": "inf",
+      "gap": 0.0,
+      "X": {
+        "EN": 1.0,
+        "HI": 1.0,
+        "TE": 1.0,
+        "SA": 1.0
+      },
+      "hard_ok": true,
+      "vocab_size": 8846
+    },
+    {
+      "name": "budget_alt",
+      "score": "inf",
+      "gap": 0.0,
+      "X": {
+        "EN": 1.0,
+        "HI": 1.0,
+        "TE": 1.0,
+        "SA": 1.0
+      },
+      "hard_ok": true,
+      "vocab_size": 8967
+    },
+    {
+      "name": "minimax_merges_only",
+      "score": 2587.8938563978086,
+      "gap": 0.3864146118388099,
+      "X": {
+        "EN": 1.7212848799480858,
+        "HI": 1.4484707038447364,
+        "TE": 1.779225908372828,
+        "SA": 1.392811296534018
+      },
+      "hard_ok": false,
+      "vocab_size": 5201
+    }
+  ]
+}

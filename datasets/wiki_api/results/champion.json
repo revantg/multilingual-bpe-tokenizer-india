@@ -1,0 +1,57 @@
+{
+  "name": "champion",
+  "vocab_size": 10000,
+  "T": {
+    "EN": 2589,
+    "HI": 2039,
+    "TE": 634,
+    "SA": 390
+  },
+  "D_words": {
+    "EN": 10336.0,
+    "HI": 8140.0,
+    "TE": 2531.0,
+    "SA": 1557.0
+  },
+  "D_fixed": {
+    "EN": 5000.0,
+    "HI": 5000.0,
+    "TE": 5000.0,
+    "SA": 5000.0
+  },
+  "X_words": {
+    "EN": 0.25048374613003094,
+    "HI": 0.2504914004914005,
+    "TE": 0.2504938759383643,
+    "SA": 0.2504816955684008
+  },
+  "X_fixed": {
+    "EN": 0.5178,
+    "HI": 0.4078,
+    "TE": 0.1268,
+    "SA": 0.078
+  },
+  "score_words": 82099312.49986266,
+  "score_fixed": 2273.7608003638015,
+  "gap_words": 1.2180369963532556e-05,
+  "gap_fixed": 0.4398,
+  "hard_ok_words": true,
+  "hard_ok_fixed": true,
+  "X_en_words": 0.25048374613003094,
+  "X_en_fixed": 0.5178,
+  "T_design": {
+    "EN": 2589,
+    "HI": 2039,
+    "TE": 634,
+    "SA": 390
+  },
+  "vocab_breakdown": {
+    "spans": 5626,
+    "words": 4194,
+    "chars": 180,
+    "total": 10000
+  },
+  "encode_matches": true,
+  "notes": "D equal-X packing for page encode + residual whole-words (then chars) in leftover vocab slots. T*={'EN': 2589, 'HI': 2039, 'TE': 634, 'SA': 390}. breakdown={'spans': 5626, 'words': 4194, 'chars': 180, 'total': 10000}. elapsed=1.7s",
+  "elapsed_s": 1.68695068359375
+}

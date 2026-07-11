@@ -1,0 +1,114 @@
+Loading full_md corpora...
+  EN: words=10307 unique=3122 chars=64856
+  HI: words=8111 unique=2276 chars=43527
+  TE: words=2307 unique=1453 chars=18301
+  SA: words=1541 unique=904 chars=12495
+
+======================================================================
+APPROACH A — pure word-interior BPE (no whole-word closure)
+======================================================================
+  base_vocab=199 unique_units=7560 total_mass=22266 target_merges=9801
+  merge 1000/9801 freq=13 vocab=1199 (0.2s)
+  merge 2000/9801 freq=6 vocab=2199 (0.4s)
+  merge 3000/9801 freq=4 vocab=3199 (0.7s)
+  merge 4000/9801 freq=3 vocab=4199 (0.8s)
+  merge 5000/9801 freq=2 vocab=5199 (1.0s)
+  merge 6000/9801 freq=2 vocab=6199 (1.2s)
+  merge 7000/9801 freq=1 vocab=7199 (1.4s)
+  merge 8000/9801 freq=1 vocab=8199 (1.5s)
+  merge 9000/9801 freq=1 vocab=9199 (1.6s)
+  done merges=9801 vocab=10000 in 1.7s
+  merge-encode: score_words=2319.488523227266 X_words={'EN': 1.1681381585330357, 'HI': 1.1178646282825793, 'TE': 1.5331599479843954, 'SA': 1.5489941596365997} hard=True
+  dp-encode:    score_words=2384.450485510979 X_words={'EN': 1.1648394295139226, 'HI': 1.116631734681297, 'TE': 1.5270914607715649, 'SA': 1.536015574302401} hard=True
+  wrote /home/rev/timepass/transformer-learning/tokenizer/data/grok_2/full_rerun/results/A.json
+
+======================================================================
+APPROACH B — fair/temp BPE (merges-only + whole-word fill)
+======================================================================
+
+--- B/merges_only ---
+[minimax_temp] base vocab=200 unique_words=7560
+  temperature=3.00 mult=EN:0.706, HI:0.828, TE:1.914, SA:2.505
+  initial X=[5.121, 4.269, 6.616, 6.959] gap=2.6902
+  merge 1: '्'+'य' script=DEV gap=2.5647 X=[5.121, 4.230, 6.616, 6.794]
+  merge 2: 'न'+'्' script=DEV gap=2.4736 X=[5.121, 4.214, 6.616, 6.688]
+  merge 250: 'स'+'म' script=DEV gap=1.6950 X=[3.223, 2.772, 4.467, 4.365]
+  merge 500: 'म'+'त' script=DEV gap=1.4966 X=[2.861, 2.413, 3.910, 3.640]
+  merge 750: 'शि'+'या' script=DEV gap=1.2488 X=[2.642, 2.235, 3.484, 3.286]
+  merge 1000: 'd'+'uring' script=EN gap=1.0676 X=[2.474, 2.114, 3.182, 3.066]
+  merge 1250: 'ప్రాంత'+'ాలు' script=TE gap=1.0573 X=[2.338, 1.986, 3.043, 2.864]
+  merge 1500: 'low'+'ing' script=EN gap=1.0070 X=[2.244, 1.899, 2.906, 2.661]
+  merge 1750: 'विका'+'स' script=DEV gap=0.8721 X=[2.139, 1.840, 2.712, 2.594]
+  merge 2000: 'ल्'+'ल' script=DEV gap=0.6648 X=[2.084, 1.829, 2.494, 2.469]
+  merge 2250: 'bill'+'ion' script=EN gap=0.7743 X=[2.013, 1.717, 2.491, 2.352]
+  merge 2500: 'హ'+'ై' script=TE gap=0.6441 X=[1.983, 1.671, 2.312, 2.315]
+  merge 2750: 'वे'+'दा' script=DEV gap=0.5511 X=[1.917, 1.671, 2.192, 2.222]
+  merge 3000: 'अकरो'+'त्' script=DEV gap=0.5212 X=[1.917, 1.671, 2.192, 1.897]
+  merge 3250: 'Is'+'l' script=EN gap=0.5746 X=[1.831, 1.614, 2.189, 1.845]
+  merge 3500: '8'+'0' script=NUM gap=0.6470 X=[1.771, 1.539, 2.186, 1.821]
+  merge 3750: 'కుల'+'ాలు' script=TE gap=0.4361 X=[1.770, 1.537, 1.973, 1.821]
+  merge 4000: 'bir'+'th' script=EN gap=0.2847 X=[1.738, 1.536, 1.816, 1.821]
+  after 4000 merges vocab=4200 gap=0.2847
+  done in 59.0s vocab=4200 merges=4000 phrases=0
+  score_words=3512.344721500497 X={'EN': 1.7375570000970215, 'HI': 1.5361854271976327, 'TE': 1.8157780667533594, 'SA': 1.8208955223880596} hard=False
+
+--- B/with_whole_word_fill ---
+[minimax_temp] base vocab=200 unique_words=7560
+  temperature=3.00 mult=EN:0.706, HI:0.828, TE:1.914, SA:2.505
+  initial X=[5.121, 4.269, 6.616, 6.959] gap=2.6902
+  merge 1: '्'+'य' script=DEV gap=2.5647 X=[5.121, 4.230, 6.616, 6.794]
+  merge 2: 'न'+'्' script=DEV gap=2.4736 X=[5.121, 4.214, 6.616, 6.688]
+  merge 250: 'स'+'म' script=DEV gap=1.6950 X=[3.223, 2.772, 4.467, 4.365]
+  merge 500: 'म'+'त' script=DEV gap=1.4966 X=[2.861, 2.413, 3.910, 3.640]
+  merge 750: 'शि'+'या' script=DEV gap=1.2488 X=[2.642, 2.235, 3.484, 3.286]
+  after 800 merges vocab=1000 gap=1.1863
+  whole-words by_lang={'EN': 2954, 'HI': 2087, 'TE': 1376, 'SA': 857} vocab=8274
+  done in 14.0s vocab=8274 merges=800 phrases=0
+  score_words=inf X={'EN': 1.0, 'HI': 1.0, 'TE': 1.0, 'SA': 1.0} hard=True
+  wrote /home/rev/timepass/transformer-learning/tokenizer/data/grok_2/full_rerun/results/B.json
+
+======================================================================
+APPROACH C — whole-word inventory + char fallback
+======================================================================
+  union=7560 selected=7560 vocab=7752 mode=all_unique_words_fit
+  coverage_occ={'EN': 100.0, 'HI': 100.0, 'TE': 100.0, 'SA': 100.0}
+  score_words=inf X={'EN': 1.0, 'HI': 1.0, 'TE': 1.0, 'SA': 1.0}
+  wrote /home/rev/timepass/transformer-learning/tokenizer/data/grok_2/full_rerun/results/C.json
+
+======================================================================
+APPROACH D — equal-X slice packing oracle
+======================================================================
+  D_words={'EN': 10307.0, 'HI': 8111.0, 'TE': 2307.0, 'SA': 1541.0}
+  BEST T*={'EN': 27, 'HI': 21, 'TE': 6, 'SA': 4} score_words=32784343.921568334 X={'EN': 0.0026195789269428545, 'HI': 0.0025890765626926395, 'TE': 0.002600780234070221, 'SA': 0.0025957170668397143}
+  wrote /home/rev/timepass/transformer-learning/tokenizer/data/grok_2/full_rerun/results/D.json
+
+======================================================================
+APPROACH E — hybrid words + residual multiword + DP
+======================================================================
+  primary score_words=inf X={'EN': 1.0, 'HI': 1.0, 'TE': 1.0, 'SA': 1.0}
+  compressed score_words=16802.74191758985 X={'EN': 0.8342873775104298, 'HI': 0.8456417211194673, 'TE': 0.8938014737754659, 'SA': 0.8702141466580143} phrases=2252
+  wrote /home/rev/timepass/transformer-learning/tokenizer/data/grok_2/full_rerun/results/E.json
+
+======================================================================
+CHAMPION — D packing + residual words in leftover slots
+======================================================================
+  r=0.02 T={'EN': 201, 'HI': 158, 'TE': 45, 'SA': 30} score_words=26333977.777776632 gap=3.7973754e-05 vocab=8178 match=True
+  r=0.04 T={'EN': 402, 'HI': 316, 'TE': 90, 'SA': 60} score_words=13166988.888888316 gap=7.5947508e-05 vocab=8612 match=True
+  r=0.05 T={'EN': 522, 'HI': 411, 'TE': 117, 'SA': 78} score_words=10128452.991453262 gap=9.8731761e-05 vocab=8872 match=True
+  r=0.0513 T={'EN': 522, 'HI': 411, 'TE': 117, 'SA': 78} score_words=10128452.991453262 gap=9.8731761e-05 vocab=8872 match=True
+  r=0.06 T={'EN': 622, 'HI': 489, 'TE': 139, 'SA': 93} score_words=10099678.977272445 gap=9.9013048e-05 vocab=9087 match=True
+  r=0.08 T={'EN': 822, 'HI': 647, 'TE': 184, 'SA': 123} score_words=14998193.57884868 gap=6.6674696e-05 vocab=9519 match=True
+  r=0.1 T={'EN': 1023, 'HI': 805, 'TE': 229, 'SA': 153} score_words=26148642.25941662 gap=3.8242903e-05 vocab=9954 match=True
+  CHAMPION score_words=26333977.777776632 X={'EN': 0.01950130978946347, 'HI': 0.01947971890025891, 'TE': 0.01950585175552666, 'SA': 0.01946787800129786}
+  wrote /home/rev/timepass/transformer-learning/tokenizer/data/grok_2/full_rerun/results/champion.json
+
+Wrote /home/rev/timepass/transformer-learning/tokenizer/data/grok_2/full_rerun/RESULTS_TABLE.md
+
+======================================================================
+DONE — comparison by score_words:
+  approach_B_fair        score_w=           inf score_f=570.3855806525212 hard=True vocab=8274
+  approach_C_words       score_w=           inf score_f=570.3855806525212 hard=True vocab=7752
+  approach_E_hybrid      score_w=           inf score_f=570.3855806525212 hard=True vocab=7748
+  approach_D_pack        score_w=32784343.921568334 score_f=217391.30434782608 hard=True vocab=58
+  champion               score_w=26333977.777776632 score_f=29239.766081871345 hard=True vocab=8178
+  approach_A_pure        score_w=2384.450485510979 score_f=518.7260089220874 hard=True vocab=10000

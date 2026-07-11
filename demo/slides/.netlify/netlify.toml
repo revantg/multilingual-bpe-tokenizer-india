@@ -1,0 +1,61 @@
+headersOrigin = "config"
+plugins = []
+redirects = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "/home/rev/timepass/transformer-learning/tokenizer/data/submission_slides"
+publishOrigin = "config"
+commandOrigin = "config"
+base = "/home/rev/timepass/transformer-learning/tokenizer/data/submission_slides"
+command = "echo 'static slides'"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[[headers]]
+for = "/*"
+
+[headers.values]
+X-Frame-Options = "DENY"
+X-Content-Type-Options = "nosniff"
+
+[[headers]]
+for = "/*.json"
+
+[headers.values]
+Content-Type = "application/json; charset=utf-8"
+Access-Control-Allow-Origin = "*"
+
+[[headers]]
+for = "/*.txt"
+
+[headers.values]
+Content-Type = "text/plain; charset=utf-8"
+Access-Control-Allow-Origin = "*"
+
+[[headers]]
+for = "/*.md"
+
+[headers.values]
+Content-Type = "text/markdown; charset=utf-8"
+
+[[headers]]
+for = "/*.zip"
+
+[headers.values]
+Content-Type = "application/zip"

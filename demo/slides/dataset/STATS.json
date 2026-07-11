@@ -1,0 +1,38 @@
+{
+  "languages": {
+    "EN": {
+      "path": "/home/rev/timepass/transformer-learning/tokenizer/data/full_page_md/india_en.md",
+      "bytes": 194043,
+      "chars": 192666,
+      "chars_cleaned": 191201,
+      "total_words": 30820,
+      "unique_words": 6984
+    },
+    "HI": {
+      "path": "/home/rev/timepass/transformer-learning/tokenizer/data/full_page_md/india_hi.md",
+      "bytes": 169693,
+      "chars": 77899,
+      "chars_cleaned": 75788,
+      "total_words": 13635,
+      "unique_words": 3584
+    },
+    "TE": {
+      "path": "/home/rev/timepass/transformer-learning/tokenizer/data/full_page_md/india_te.md",
+      "bytes": 69124,
+      "chars": 30512,
+      "chars_cleaned": 29836,
+      "total_words": 4053,
+      "unique_words": 2155
+    },
+    "SA": {
+      "path": "/home/rev/timepass/transformer-learning/tokenizer/data/full_page_md/india_sa.md",
+      "bytes": 45765,
+      "chars": 17795,
+      "chars_cleaned": 16973,
+      "total_words": 2092,
+      "unique_words": 1275
+    }
+  },
+  "union_unique_words": 12599,
+  "union_gt_10000": true
+}

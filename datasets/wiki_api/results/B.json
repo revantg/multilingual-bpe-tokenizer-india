@@ -1,0 +1,182 @@
+{
+  "name": "approach_B_fair",
+  "vocab_size": 8394,
+  "T": {
+    "EN": 10336,
+    "HI": 8140,
+    "TE": 2531,
+    "SA": 1557
+  },
+  "D_words": {
+    "EN": 10336.0,
+    "HI": 8140.0,
+    "TE": 2531.0,
+    "SA": 1557.0
+  },
+  "D_fixed": {
+    "EN": 5000.0,
+    "HI": 5000.0,
+    "TE": 5000.0,
+    "SA": 5000.0
+  },
+  "X_words": {
+    "EN": 1.0,
+    "HI": 1.0,
+    "TE": 1.0,
+    "SA": 1.0
+  },
+  "X_fixed": {
+    "EN": 2.0672,
+    "HI": 1.628,
+    "TE": 0.5062,
+    "SA": 0.3114
+  },
+  "score_words": "inf",
+  "score_fixed": 569.5409499943045,
+  "gap_words": 0.0,
+  "gap_fixed": 1.7558000000000002,
+  "hard_ok_words": true,
+  "hard_ok_fixed": false,
+  "X_en_words": 1.0,
+  "X_en_fixed": 2.0672,
+  "train_meta": {
+    "merges": 800,
+    "vocab_size": 8394,
+    "temperature": 3.0,
+    "variant": "minimax_temp",
+    "elapsed_s": 14.295009136199951
+  },
+  "primary_variant": "with_whole_word_fill",
+  "notes": "Temperature upsample + script budgets + minimax merges. Reports merges-only AND whole-word fill of remaining budget (V<=10000). Primary=with_whole_word_fill. elapsed=71.3s",
+  "variants": {
+    "merges_only": {
+      "vocab_size": 4200,
+      "T": {
+        "EN": 18303,
+        "HI": 12513,
+        "TE": 4560,
+        "SA": 2830
+      },
+      "X_words": {
+        "EN": 1.7708010835913313,
+        "HI": 1.5372235872235873,
+        "TE": 1.801659423152904,
+        "SA": 1.8175979447655748
+      },
+      "X_fixed": {
+        "EN": 3.6606,
+        "HI": 2.5026,
+        "TE": 0.912,
+        "SA": 0.566
+      },
+      "score_words": 3566.659978347859,
+      "score_fixed": 323.14354036062815,
+      "hard_ok_words": false,
+      "hard_ok_fixed": false,
+      "train_meta": {
+        "merges": 4000,
+        "vocab_size": 4200,
+        "temperature": 3.0,
+        "variant": "minimax_temp",
+        "elapsed_s": 56.94460153579712
+      }
+    },
+    "with_whole_word_fill": {
+      "vocab_size": 8394,
+      "T": {
+        "EN": 10336,
+        "HI": 8140,
+        "TE": 2531,
+        "SA": 1557
+      },
+      "X_words": {
+        "EN": 1.0,
+        "HI": 1.0,
+        "TE": 1.0,
+        "SA": 1.0
+      },
+      "X_fixed": {
+        "EN": 2.0672,
+        "HI": 1.628,
+        "TE": 0.5062,
+        "SA": 0.3114
+      },
+      "score_words": "inf",
+      "score_fixed": 569.5409499943045,
+      "hard_ok_words": true,
+      "hard_ok_fixed": false,
+      "train_meta": {
+        "merges": 800,
+        "vocab_size": 8394,
+        "temperature": 3.0,
+        "variant": "minimax_temp",
+        "elapsed_s": 14.295009136199951
+      }
+    }
+  },
+  "merges_only": {
+    "vocab_size": 4200,
+    "T": {
+      "EN": 18303,
+      "HI": 12513,
+      "TE": 4560,
+      "SA": 2830
+    },
+    "X_words": {
+      "EN": 1.7708010835913313,
+      "HI": 1.5372235872235873,
+      "TE": 1.801659423152904,
+      "SA": 1.8175979447655748
+    },
+    "X_fixed": {
+      "EN": 3.6606,
+      "HI": 2.5026,
+      "TE": 0.912,
+      "SA": 0.566
+    },
+    "score_words": 3566.659978347859,
+    "score_fixed": 323.14354036062815,
+    "hard_ok_words": false,
+    "hard_ok_fixed": false,
+    "train_meta": {
+      "merges": 4000,
+      "vocab_size": 4200,
+      "temperature": 3.0,
+      "variant": "minimax_temp",
+      "elapsed_s": 56.94460153579712
+    }
+  },
+  "with_whole_word_fill": {
+    "vocab_size": 8394,
+    "T": {
+      "EN": 10336,
+      "HI": 8140,
+      "TE": 2531,
+      "SA": 1557
+    },
+    "X_words": {
+      "EN": 1.0,
+      "HI": 1.0,
+      "TE": 1.0,
+      "SA": 1.0
+    },
+    "X_fixed": {
+      "EN": 2.0672,
+      "HI": 1.628,
+      "TE": 0.5062,
+      "SA": 0.3114
+    },
+    "score_words": "inf",
+    "score_fixed": 569.5409499943045,
+    "hard_ok_words": true,
+    "hard_ok_fixed": false,
+    "train_meta": {
+      "merges": 800,
+      "vocab_size": 8394,
+      "temperature": 3.0,
+      "variant": "minimax_temp",
+      "elapsed_s": 14.295009136199951
+    }
+  },
+  "elapsed_s": 71.32121801376343
+}

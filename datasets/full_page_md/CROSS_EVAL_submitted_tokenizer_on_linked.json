@@ -1,0 +1,152 @@
+{
+  "method": "cross-eval only — Netlify submitted tokenizer.json; NO retrain",
+  "tokenizer_source": "https://tokenizer-india-slides-rev.netlify.app/tokenizer.json",
+  "also_same_file_on": "https://tokenizer-india-b-opt-rev-28915.netlify.app/tokenizer.json",
+  "trained_claimed": {
+    "score_words": 9298.404873834106,
+    "X_words": {
+      "EN": 1.157138221933809,
+      "HI": 1.0824349101576825,
+      "TE": 1.0495928941524797,
+      "SA": 1.1104206500956022
+    },
+    "T": {
+      "EN": 35663,
+      "HI": 14759,
+      "TE": 4254,
+      "SA": 2323
+    },
+    "note": "trained + scored on full_page_md BEFORE link injection"
+  },
+  "new_data_on_disk": {
+    "paths": "data/full_page_md/india_{en,hi,te,sa}.md",
+    "markdown_links_in_files": {
+      "EN": 2784,
+      "HI": 1182,
+      "TE": 613,
+      "SA": 388
+    }
+  },
+  "eval_A_harness_clean_text": {
+    "note": "clean_text turns [label](url) → label; this is load_full_page.py default",
+    "metrics": {
+      "name": "submitted_on_linked_CLEANED",
+      "denom_mode": "words",
+      "T": {
+        "EN": 35663,
+        "HI": 14759,
+        "TE": 4254,
+        "SA": 2323
+      },
+      "D": {
+        "EN": 30789.0,
+        "HI": 13630.0,
+        "TE": 4053.0,
+        "SA": 2091.0
+      },
+      "X": {
+        "EN": 1.1583032901360875,
+        "HI": 1.0828319882611885,
+        "TE": 1.0495928941524797,
+        "SA": 1.1109516977522715
+      },
+      "gap": 0.10871039598360777,
+      "score": 9198.75225319562,
+      "vocab_size": 10000,
+      "X_en_le_1_2": true,
+      "vocab_ok": true,
+      "hard_ok": true,
+      "sorted_X": [
+        [
+          "EN",
+          1.1583032901360875
+        ],
+        [
+          "SA",
+          1.1109516977522715
+        ],
+        [
+          "HI",
+          1.0828319882611885
+        ],
+        [
+          "TE",
+          1.0495928941524797
+        ]
+      ]
+    },
+    "unk": {
+      "EN": 0,
+      "HI": 0,
+      "TE": 0,
+      "SA": 0
+    },
+    "missing_chars_count": {
+      "EN": 0,
+      "HI": 0,
+      "TE": 0,
+      "SA": 0
+    }
+  },
+  "eval_B_raw_markdown_files": {
+    "note": "encode files as-is;builtin word regex still only letters/digits so URL noise partly ignored",
+    "metrics": {
+      "name": "submitted_on_linked_RAW_MD",
+      "denom_mode": "words",
+      "T": {
+        "EN": 95432,
+        "HI": 98855,
+        "TE": 46710,
+        "SA": 32919
+      },
+      "D": {
+        "EN": 55502.0,
+        "HI": 80594.0,
+        "TE": 38141.0,
+        "SA": 26969.0
+      },
+      "X": {
+        "EN": 1.7194335339267053,
+        "HI": 1.2265801424423655,
+        "TE": 1.2246663695236097,
+        "SA": 1.2206236790388965
+      },
+      "gap": 0.4988098548878088,
+      "score": 2004.7719390486336,
+      "vocab_size": 10000,
+      "X_en_le_1_2": false,
+      "vocab_ok": true,
+      "hard_ok": false,
+      "sorted_X": [
+        [
+          "EN",
+          1.7194335339267053
+        ],
+        [
+          "HI",
+          1.2265801424423655
+        ],
+        [
+          "TE",
+          1.2246663695236097
+        ],
+        [
+          "SA",
+          1.2206236790388965
+        ]
+      ]
+    },
+    "unk": {
+      "EN": 0,
+      "HI": 0,
+      "TE": 0,
+      "SA": 0
+    },
+    "missing_chars_count": {
+      "EN": 0,
+      "HI": 0,
+      "TE": 0,
+      "SA": 0
+    }
+  }
+}

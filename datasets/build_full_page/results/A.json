@@ -1,0 +1,97 @@
+{
+  "name": "approach_A_pure",
+  "vocab_size": 10000,
+  "T": {
+    "EN": 37483,
+    "HI": 16461,
+    "TE": 6627,
+    "SA": 3920
+  },
+  "D_words": {
+    "EN": 30820.0,
+    "HI": 13635.0,
+    "TE": 4053.0,
+    "SA": 2092.0
+  },
+  "D_fixed": {
+    "EN": 5000.0,
+    "HI": 5000.0,
+    "TE": 5000.0,
+    "SA": 5000.0
+  },
+  "X_words": {
+    "EN": 1.2161907852044127,
+    "HI": 1.2072607260726074,
+    "TE": 1.6350851221317542,
+    "SA": 1.8738049713193117
+  },
+  "X_fixed": {
+    "EN": 7.4966,
+    "HI": 3.2922,
+    "TE": 1.3254,
+    "SA": 0.784
+  },
+  "score_words": 1500.275498785344,
+  "score_fixed": 148.97357208831153,
+  "gap_words": 0.6665442452467043,
+  "gap_fixed": 6.7126,
+  "hard_ok_words": false,
+  "hard_ok_fixed": false,
+  "X_en_words": 1.2161907852044127,
+  "X_en_fixed": 7.4966,
+  "encode_mode": "dp",
+  "notes": "Classic word-interior BPE, vocab=10000, NO whole-word closure. Encode mode=dp. Merges=9797. merge score_words=1456.8584416563447 dp score_words=1500.275498785344. elapsed=62.3s",
+  "variants": {
+    "merge": {
+      "vocab_size": 10000,
+      "T": {
+        "EN": 37718,
+        "HI": 16503,
+        "TE": 6663,
+        "SA": 3968
+      },
+      "X_words": {
+        "EN": 1.2238157040882545,
+        "HI": 1.2103410341034104,
+        "TE": 1.6439674315321984,
+        "SA": 1.8967495219885278
+      },
+      "X_fixed": {
+        "EN": 7.5436,
+        "HI": 3.3006,
+        "TE": 1.3326,
+        "SA": 0.7936
+      },
+      "score_words": 1456.8584416563447,
+      "score_fixed": 148.14814814814815,
+      "hard_ok_words": false,
+      "hard_ok_fixed": false
+    },
+    "dp": {
+      "vocab_size": 10000,
+      "T": {
+        "EN": 37483,
+        "HI": 16461,
+        "TE": 6627,
+        "SA": 3920
+      },
+      "X_words": {
+        "EN": 1.2161907852044127,
+        "HI": 1.2072607260726074,
+        "TE": 1.6350851221317542,
+        "SA": 1.8738049713193117
+      },
+      "X_fixed": {
+        "EN": 7.4966,
+        "HI": 3.2922,
+        "TE": 1.3254,
+        "SA": 0.784
+      },
+      "score_words": 1500.275498785344,
+      "score_fixed": 148.97357208831153,
+      "hard_ok_words": false,
+      "hard_ok_fixed": false
+    }
+  },
+  "elapsed_s": 62.315465211868286
+}

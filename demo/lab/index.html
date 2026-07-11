@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Multilingual Tokenizer Approaches — Interactive Demo</title>
+<style>
+  :root {
+    --bg: #0b1020;
+    --panel: #121a2f;
+    --panel2: #18233d;
+    --border: #2a415e;
+    --text: #e8eef9;
+    --muted: #9bb0cc;
+    --accent: #5cc8ff;
+    --accent2: #ffb454;
+    --good: #3ddea5;
+    --bad: #ff6b8a;
+    --chip-in: #1f3d5c;
+    --shadow: 0 10px 40px rgba(0,0,0,.35);
+    --radius: 14px;
+    --font: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --mono: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #1a2b55 0%, transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, #2a1840 0%, transparent 55%),
+      var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  header {
+    padding: 28px 24px 8px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  header h1 {
+    font-family: var(--font);
+    font-weight: 600;
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+  }
+  header p { color: var(--muted); margin: 0; max-width: 70ch; }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .badge {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,.03);
+    color: var(--muted);
+  }
+  .badge strong { color: var(--accent); font-weight: 600; }
+
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 24px 48px;
+    display: grid;
+    gap: 16px;
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    padding: 10px 0;
+    background: linear-gradient(var(--bg) 70%, transparent);
+  }
+  .tab {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: .15s ease;
+  }
+  .tab:hover { border-color: var(--accent); }
+  .tab.active {
+    background: linear-gradient(135deg, #1e4d78, #2a3868);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(92,200,255,.25);
+  }
+  .tab .tiny { display: block; font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 16px;
+  }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .card h2 {
+    margin: 0;
+    padding: 16px 18px 0;
+    font-family: var(--font);
+    font-size: 1.25rem;
+  }
+  .card .sub {
+    padding: 4px 18px 0;
+    color: var(--accent2);
+    font-size: 13px;
+  }
+  .card .body { padding: 12px 18px 18px; }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    margin: 12px 0;
+  }
+  .metric {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .metric .k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .metric .v { font-size: 16px; font-weight: 600; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .metric .v.good { color: var(--good); }
+  .metric .v.warn { color: var(--accent2); }
+  .metric .v.bad { color: var(--bad); }
+
+  .desc { color: var(--muted); font-size: 14px; }
+  .desc strong { color: var(--text); }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  button.primary {
+    background: linear-gradient(135deg, #2485d4, #4f6ae0);
+    border: none;
+    color: white;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  button.primary:hover { filter: brightness(1.08); }
+  button.ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 9px 12px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  button.ghost:hover { border-color: var(--accent); }
+  select, input[type="range"] {
+    background: var(--panel2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+  label.slabel { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+
+  .lang-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+  }
+  .lang-EN { background: #1a3350; color: #8ec8ff; }
+  .lang-HI { background: #3a2a14; color: #ffc978; }
+  .lang-TE { background: #1f3a2e; color: #7dffc3; }
+  .lang-SA { background: #3a1f3a; color: #f0a0ff; }
+
+  .snippet-box {
+    background: #0a1224;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.65;
+    min-height: 88px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .snippet-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .token-stream {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+    max-height: 360px;
+    overflow: auto;
+    padding: 4px 2px 8px;
+  }
+  .tok {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 5px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--chip-in);
+    max-width: 100%;
+    word-break: break-word;
+    position: relative;
+    cursor: default;
+    transition: transform .1s ease;
+  }
+  .tok:hover { transform: translateY(-1px); border-color: var(--accent); z-index: 1; }
+  .tok .idx {
+    position: absolute;
+    top: -7px; right: -4px;
+    font-size: 9px;
+    background: #0d1a30;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0 4px;
+    color: var(--muted);
+  }
+  .tok.subword { background: #1a3a4a; border-color: #3a7a9a; color: #a6e3ff; }
+  .tok.word    { background: #1c3a2a; border-color: #3a9a6a; color: #b8ffd7; }
+  .tok.phrase  { background: #3a2c16; border-color: #c48a3a; color: #ffd8a0; }
+  .tok.pack    { background: #3a1f38; border-color: #c46ab0; color: #ffc6f0; }
+  .tok.char    { background: #2a2030; border-color: #7a5a8a; color: #e0c0ff; opacity: .95; }
+  .tok.unk     { background: #3a1818; border-color: var(--bad); color: #ffb0b8; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    font-size: 11px; color: var(--muted); margin-top: 8px;
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .swatch {
+    width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--border);
+  }
+
+  .split-view {
+    display: grid;
+    gap: 10px;
+  }
+  .pair {
+    margin: 0;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .align-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 8px;
+    align-items: start;
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(42,65,94,.6);
+  }
+  .align-row:last-child { border-bottom: none; }
+  .align-word {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent2);
+    word-break: break-word;
+  }
+  .stat-bar {
+    height: 8px;
+    border-radius: 999px;
+    background: #0c1628;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .stat-bar > i {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #3ddea5, #5cc8ff, #ffb454);
+  }
+
+  footer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 40px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .loading {
+    padding: 80px 24px;
+    text-align: center;
+    color: var(--muted);
+  }
+  code { font-family: var(--mono); font-size: .9em; color: #c5d8ff; }
+  .warn-banner {
+    background: rgba(255,180,84,.12);
+    border: 1px solid rgba(255,180,84,.4);
+    color: #ffd8a0;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin: 8px 0 0;
+  }
+  .x-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .x-chip {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+  }
+  .x-chip .lang { font-size: 11px; color: var(--muted); }
+  .x-chip .xv { font-weight: 700; font-variant-numeric: tabular-nums; font-size: 14px; }
+  .x-chip.over .xv { color: var(--bad); }
+  .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--muted);
+    margin: 14px 0 6px;
+  }
+
+</style>
+</head>
+<body>
+  <div id="boot" class="loading">Loading tokenizer vocabularies…</div>
+  <div id="app" hidden>
+    <header>
+      <h1>Multilingual India Wiki Tokenizers — Approach Explorer</h1>
+      <p>
+        Vocabularies rebuilt on <strong>full Wikipedia pages</strong> (EN/HI/TE/SA cleaned markdown:
+        <code>full_page_md/</code>). Unique word union is <strong>~12 600 > 10 000</strong>, so whole-word
+        perfect cover is impossible. Pick an approach, sample a random span, and see how its real vocab splits it.
+      </p>
+      <div class="badge-row" id="corpus-badges">
+        <div class="badge">Corpus: <strong id="corpus-name">full_page_md</strong></div>
+        <div class="badge">Union unique: <strong id="union-unique">—</strong></div>
+        <div class="badge">Vocab cap <strong>10 000</strong></div>
+        <div class="badge">X<sub>EN</sub> ≤ <strong>1.2</strong> for hard_ok</div>
+        <div class="badge">score = <strong>1000 / (maxX − minX)</strong></div>
+      </div>
+    </header>
+
+    <main>
+      <div class="tabs" id="tabs"></div>
+
+      <div class="card" id="leaderboard-card">
+        <h2 style="font-size:1.05rem">Full-page scoreboard (words denom)</h2>
+        <div class="body">
+          <p class="desc" style="margin:0 0 10px">
+            Authoritative metrics from retrain on <code>full_page_md</code>
+            (shared vocab ≤10k · score = 1000/(maxX−minX) · hard_ok requires X<sub>EN</sub>≤1.2).
+          </p>
+          <div style="overflow:auto">
+            <table id="leaderboard" style="width:100%;border-collapse:collapse;font-size:12.5px;font-family:var(--mono)">
+              <thead>
+                <tr style="color:var(--muted);text-align:left">
+                  <th style="padding:6px 8px;border-bottom:1px solid var(--border)">#</th>
+                  <th style="padding:6px 8px;border-bottom:1px solid var(--border)">Approach</th>
+                  <th style="padding:6px 8px;border-bottom:1px solid var(--border)">Vocab</th>
+                  <th style="padding:6px 8px;border-bottom:1px solid var(--border)">score_words</th>
+                  <th style="padding:6px 8px;border-bottom:1px solid var(--border)">hard</th>
+                  <th style="padding:6px 8px;border-bottom:1px solid var(--border)">X_EN</th>
+                  <th style="padding:6px 8px;border-bottom:1px solid var(--border)">X_HI</th>
+                  <th style="padding:6px 8px;border-bottom:1px solid var(--border)">X_TE</th>
+                  <th style="padding:6px 8px;border-bottom:1px solid var(--border)">X_SA</th>
+                  <th style="padding:6px 8px;border-bottom:1px solid var(--border)">T</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="card">
+        <h2 id="title">—</h2>
+        <div class="sub" id="subtitle"></div>
+        <div class="body">
+          <div class="meta-grid" id="metrics"></div>
+          <div class="section-label">X = tokens / words (full page)</div>
+          <div class="x-row" id="x-words"></div>
+          <div class="section-label">X = tokens / 5000 (assignment “say 5000”)</div>
+          <div class="x-row" id="x-fixed"></div>
+          <div id="hard-banner"></div>
+          <p class="desc" id="description"></p>
+          <p class="desc" id="how_tokens" style="margin-top:8px"></p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2 style="font-size:1.05rem">Snippet</h2>
+          <div class="body">
+            <div class="controls">
+              <button class="primary" id="btn-random">🎲 Random snippet (all langs)</button>
+              <button class="ghost" id="btn-random-lang">🎲 This language</button>
+              <select id="lang-select"></select>
+              <label class="slabel">words
+                <input type="range" id="len-range" min="4" max="28" value="12" />
+                <span id="len-val">12</span>
+              </label>
+            </div>
+            <div id="lang-badge"></div>
+            <div class="snippet-box" id="snippet"></div>
+            <div class="snippet-meta" id="snippet-meta"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 style="font-size:1.05rem">Token breakdown</h2>
+          <div class="body">
+            <div class="pair" id="tok-summary">—</div>
+            <div class="stat-bar" title="fertility = tokens / words of snippet">
+              <i id="fertility-bar" style="width:0%"></i>
+            </div>
+            <div class="legend">
+              <span><i class="swatch" style="background:#1c3a2a;border-color:#3a9a6a"></i> whole word</span>
+              <span><i class="swatch" style="background:#1a3a4a;border-color:#3a7a9a"></i> subword / merge</span>
+              <span><i class="swatch" style="background:#3a2c16;border-color:#c48a3a"></i> multiword phrase</span>
+              <span><i class="swatch" style="background:#3a1f38;border-color:#c46ab0"></i> packed slab</span>
+              <span><i class="swatch" style="background:#2a2030;border-color:#7a5a8a"></i> character</span>
+              <span><i class="swatch" style="background:#3a1818;border-color:#ff6b8a"></i> unk</span>
+            </div>
+            <div class="token-stream" id="tokens"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 style="font-size:1.05rem">Per-word alignment</h2>
+        <div class="body">
+          <p class="pair">Each pretok word → the piece(s) of the vocabulary that cover it under this approach.</p>
+          <div id="alignment" class="split-view"></div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      Vocabs rebuilt on <code>data/full_page_md/</code> (full Downloads Wikipedia). See <code>export_demo.py</code>.
+      Encodings reproduce Approach A–E + champion vocabularies on harness words.
+      Packing (D / Champ) maps word ranges onto equal-X slabs from the full-page design; partial pages never hit full-page short-circuit scores.
+    </footer>
+  </div>
+
+<script src="demo_data.js"></script>
+<script>
+(function () {
+  const B = window.DEMO_BUNDLE;
+  if (!B) {
+    document.getElementById('boot').textContent = 'Failed to load demo_data.js';
+    return;
+  }
+  document.getElementById('boot').hidden = true;
+  document.getElementById('app').hidden = false;
+
+  /** ---------- helpers ---------- */
+  function setFrom(arr) {
+    const s = new Set(arr || []);
+    return s;
+  }
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&' + 'amp;')
+      .replace(/</g, '&' + 'lt;')
+      .replace(/>/g, '&' + 'gt;')
+      .replace(/"/g, '&' + 'quot;');
+  }
+  function fillLeaderboard() {
+    const board = (B && B.leaderboard) || [];
+    const tbody = document.querySelector('#leaderboard tbody');
+    if (!tbody) return;
+    const fmt = (s) => {
+      if (s === 'inf' || s === Infinity) return '∞';
+      const n = Number(s);
+      if (!isFinite(n)) return String(s);
+      if (n >= 1e6) return n.toExponential(2);
+      if (n >= 100) return n.toFixed(1);
+      return n.toFixed(2);
+    };
+    tbody.innerHTML = board.map((r, i) => {
+      const X = r.X_words || {};
+      const T = r.T || {};
+      const hard = r.hard_ok_words
+        ? '<span style="color:var(--good)">yes</span>'
+        : '<span style="color:var(--bad)">no</span>';
+      const short = String(r.id || '').replace(/^approach_/, '').replace(/_/g, ' ');
+      return `<tr>
+        <td style="padding:6px 8px;border-bottom:1px solid var(--border)">${i + 1}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid var(--border)">${escapeHtml(short)}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid var(--border)">${r.vocab_size ?? '—'}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--accent2)">${fmt(r.score_words)}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid var(--border)">${hard}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid var(--border)">${Number(X.EN || 0).toFixed(3)}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid var(--border)">${Number(X.HI || 0).toFixed(3)}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid var(--border)">${Number(X.TE || 0).toFixed(3)}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid var(--border)">${Number(X.SA || 0).toFixed(3)}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid var(--border);font-size:11px">EN ${T.EN} · HI ${T.HI} · TE ${T.TE} · SA ${T.SA}</td>
+      </tr>`;
+    }).join('');
+  }
+  function fmtTok(t) {
+    if (t === ' ') return '·';
+    if (t === '\n') return '↵';
+    if (t === '\t') return '⇥';
+    if (t === '') return '∅';
+    // show bigram internal seps nicely
+    return t.replace(/\u0001/g, ' ⊕ ');
+  }
+  function randInt(n) { return Math.floor(Math.random() * n); }
+
+  /** ---------- BPE encode (Approach A / B merges) ---------- */
+  function applyMerges(chars, mergeRanks) {
+    // mergeRanks: Map "a\0b" -> rank
+    let symbols = chars.slice();
+    if (!symbols.length) return symbols;
+    while (symbols.length >= 2) {
+      let bestRank = Infinity, bestI = -1;
+      for (let i = 0; i < symbols.length - 1; i++) {
+        const key = symbols[i] + '\0' + symbols[i + 1];
+        const r = mergeRanks.get(key);
+        if (r !== undefined && r < bestRank) {
+          bestRank = r;
+          bestI = i;
+        }
+      }
+      if (bestI < 0) break;
+      symbols = symbols.slice(0, bestI)
+        .concat([symbols[bestI] + symbols[bestI + 1]])
+        .concat(symbols.slice(bestI + 2));
+    }
+    return symbols;
+  }
+
+  function encodeBpeWord(word, vocabSet, mergeRanks) {
+    if (vocabSet.has(word)) {
+      return [{ t: word, kind: word.length === 1 ? 'char' : 'word' }];
+    }
+    const parts = applyMerges(Array.from(word), mergeRanks);
+    return parts.map(p => {
+      if (!vocabSet.has(p) && p.length === 1) return { t: p, kind: 'char' };
+      if (vocabSet.has(p) && p.length === word.length) return { t: p, kind: 'word' };
+      if (p.length === 1) return { t: p, kind: 'char' };
+      return { t: p, kind: 'subword' };
+    });
+  }
+
+  function ranksFromMerges(merges) {
+    const m = new Map();
+    (merges || []).forEach((pair, i) => {
+      m.set(pair[0] + '\0' + pair[1], i);
+    });
+    return m;
+  }
+
+  /** ---------- Approach encode ---------- */
+  function prepareApproach(a) {
+    a._vocab = setFrom(a.vocab_set);
+    a._words = setFrom(a.word_set || a.word_tokens || []);
+    a._ranks = ranksFromMerges(a.merges || []);
+    a._phraseSet = new Set();
+    a._sep = a.sep || '\u0001';
+    a._maxN = a.max_n || 1;
+    if (a.phrases) {
+      a.phrases.forEach(p => a._phraseSet.add(p));
+    }
+    // For E: phrase tokens may live in vocab as sep-joined
+    if (a.kind === 'hybrid_dp') {
+      a._vocab.forEach(tok => {
+        if (tok.includes(a._sep)) a._phraseSet.add(tok);
+      });
+    }
+    // word inventory if kind words/champion
+    if (a.kind === 'words' || a.kind === 'champion' || a.kind === 'fair_bpe') {
+      if (!a._words.size && a._vocab.size) {
+        // treat multi-char non-merge vocab as words
+        a._vocab.forEach(t => {
+          if (t.length > 1 && !t.includes(a._sep)) a._words.add(t);
+        });
+      }
+    }
+    return a;
+  }
+
+  const approaches = B.approaches.map(prepareApproach);
+  let current = approaches[0];
+  let state = { lang: 'EN', start: 0, words: [] };
+
+  function pickSnippet(lang, nWords) {
+    const all = B.words[lang];
+    if (!all || !all.length) return { lang, start: 0, words: [] };
+    nWords = Math.min(nWords, all.length);
+    const start = randInt(all.length - nWords + 1);
+    return { lang, start, words: all.slice(start, start + nWords) };
+  }
+
+  /** Map word-index range to packing spans */
+  function packingTokens(a, lang, start, end) {
+    // end exclusive word index into page
+    const spans = a.spans && a.spans[lang];
+    if (!spans) return null;
+    const ranges = spans.ranges;
+    const tablets = spans.tablets;
+    const hits = [];
+    for (let i = 0; i < ranges.length; i++) {
+      const [a0, b0] = ranges[i];
+      // overlaps [start, end)
+      if (b0 <= start || a0 >= end) continue;
+      hits.push({
+        t: tablets[i],
+        kind: 'pack',
+        cover: [Math.max(a0, start), Math.min(b0, end)],
+        full: [a0, b0],
+      });
+    }
+    return hits;
+  }
+
+  function encodeWordsDpPhrases(words, vocab, phraseSet, sep, maxN) {
+    // min token cover: phrase (sep-joined) or whole word or chars
+    const n = words.length;
+    const INF = 1e9;
+    const dp = new Array(n + 1).fill(INF);
+    const choice = new Array(n + 1).fill(null);
+    dp[n] = 0;
+    for (let i = n - 1; i >= 0; i--) {
+      const w = words[i];
+      if (vocab.has(w)) {
+        if (1 + dp[i + 1] < dp[i]) {
+          dp[i] = 1 + dp[i + 1];
+          choice[i] = { end: i + 1, tok: w, kind: 'word' };
+        }
+      } else {
+        // char cost
+        const cost = Math.max(1, Array.from(w).length);
+        if (cost + dp[i + 1] < dp[i]) {
+          dp[i] = cost + dp[i + 1];
+          choice[i] = { end: i + 1, tok: w, kind: 'charword' };
+        }
+      }
+      const lim = Math.min(maxN, n - i);
+      for (let L = 2; L <= lim; L++) {
+        const ph = words.slice(i, i + L).join(sep);
+        if (phraseSet.has(ph) || vocab.has(ph)) {
+          if (1 + dp[i + L] < dp[i]) {
+            dp[i] = 1 + dp[i + L];
+            choice[i] = { end: i + L, tok: ph, kind: 'phrase' };
+          }
+        }
+        // also space-joined phrase if stored that way
+        const ph2 = words.slice(i, i + L).join(' ');
+        if (phraseSet.has(ph2) || vocab.has(ph2)) {
+          if (1 + dp[i + L] < dp[i]) {
+            dp[i] = 1 + dp[i + L];
+            choice[i] = { end: i + L, tok: ph2, kind: 'phrase' };
+          }
+        }
+      }
+    }
+    const tokens = [];
+    const perWord = words.map(() => []);
+    let i = 0;
+    while (i < n) {
+      const c = choice[i];
+      if (!c) {
+        perWord[i].push({ t: words[i], kind: 'unk' });
+        tokens.push({ t: words[i], kind: 'unk' });
+        i++;
+        continue;
+      }
+      if (c.kind === 'charword') {
+        const chars = Array.from(c.tok);
+        chars.forEach(ch => {
+          const piece = { t: ch, kind: vocab.has(ch) ? 'char' : 'unk' };
+          tokens.push(piece);
+          perWord[i].push(piece);
+        });
+      } else {
+        const piece = { t: c.tok, kind: c.kind };
+        tokens.push(piece);
+        for (let j = i; j < c.end; j++) perWord[j].push(piece);
+      }
+      i = c.end;
+    }
+    return { tokens, perWord };
+  }
+
+  function encodeApproach(a, lang, start, words) {
+    const end = start + words.length;
+
+    // Packing-focused approaches
+    if (a.kind === 'packing' || (a.kind === 'champion' && a.spans)) {
+      const hits = packingTokens(a, lang, start, end);
+      if (hits && hits.length) {
+        const tokens = hits.map(h => ({ t: h.t, kind: 'pack' }));
+        // alignment: each word maps to the pack span covering it
+        const perWord = words.map((w, i) => {
+          const g = start + i;
+          const cover = hits.find(h => g >= h.full[0] && g < h.full[1]);
+          return cover ? [{ t: cover.t, kind: 'pack' }] : [{ t: w, kind: 'unk' }];
+        });
+        return { tokens, perWord, mode: 'packing' };
+      }
+    }
+
+    if (a.kind === 'words') {
+      const tokens = [];
+      const perWord = [];
+      words.forEach(w => {
+        if (a._vocab.has(w) || a._words.has(w)) {
+          const p = { t: w, kind: 'word' };
+          tokens.push(p);
+          perWord.push([p]);
+        } else {
+          const pieces = Array.from(w).map(ch => ({
+            t: ch,
+            kind: a._vocab.has(ch) ? 'char' : 'unk',
+          }));
+          pieces.forEach(p => tokens.push(p));
+          perWord.push(pieces);
+        }
+      });
+      return { tokens, perWord, mode: 'words' };
+    }
+
+    if (a.kind === 'bpe' || a.kind === 'fair_bpe') {
+      const tokens = [];
+      const perWord = [];
+      words.forEach(w => {
+        // fair_bpe: prefer whole word in vocab
+        if (a.kind === 'fair_bpe' && a._vocab.has(w)) {
+          const p = { t: w, kind: 'word' };
+          tokens.push(p);
+          perWord.push([p]);
+          return;
+        }
+        const pieces = encodeBpeWord(w, a._vocab, a._ranks);
+        pieces.forEach(p => tokens.push(p));
+        perWord.push(pieces);
+      });
+      return { tokens, perWord, mode: a.kind };
+    }
+
+    if (a.kind === 'hybrid_dp' || a.kind === 'champion') {
+      // champion fallback already handled packing; use word DP + phrases
+      return {
+        ...encodeWordsDpPhrases(words, a._vocab, a._phraseSet, a._sep, a._maxN || 8),
+        mode: 'hybrid_dp',
+      };
+    }
+
+    // fallback: words
+    return encodeApproach({ ...a, kind: 'words' }, lang, start, words);
+  }
+
+  /** ---------- UI ---------- */
+  const tabsEl = document.getElementById('tabs');
+  const titleEl = document.getElementById('title');
+  const subEl = document.getElementById('subtitle');
+  const descEl = document.getElementById('description');
+  const howEl = document.getElementById('how_tokens');
+  const metricsEl = document.getElementById('metrics');
+  const langSelect = document.getElementById('lang-select');
+  const snippetEl = document.getElementById('snippet');
+  const snippetMeta = document.getElementById('snippet-meta');
+  const langBadge = document.getElementById('lang-badge');
+  const tokensEl = document.getElementById('tokens');
+  const tokSummary = document.getElementById('tok-summary');
+  const fertilityBar = document.getElementById('fertility-bar');
+  const alignmentEl = document.getElementById('alignment');
+  const lenRange = document.getElementById('len-range');
+  const lenVal = document.getElementById('len-val');
+
+  B.langs.forEach(L => {
+    const opt = document.createElement('option');
+    opt.value = L;
+    opt.textContent = `${L} — ${B.lang_labels[L]} (${B.word_counts[L]} words)`;
+    langSelect.appendChild(opt);
+  });
+
+  approaches.forEach((a, i) => {
+    const b = document.createElement('button');
+    b.className = 'tab' + (i === 0 ? ' active' : '');
+    const sw = a.metrics && a.metrics.score_words;
+    let scShort = a.score_label;
+    if (sw !== undefined) {
+      const n = Number(sw);
+      scShort = (sw === 'inf') ? '∞' : (isFinite(n) ? (n >= 1e6 ? n.toExponential(1) : Math.round(n)) : sw);
+    }
+    const hard = a.metrics ? a.metrics.hard_ok_words : a.hard_ok;
+    b.innerHTML = `<strong>${a.id}</strong><span class="tiny">H${a.honesty} · score ${escapeHtml(String(scShort))} · ${hard ? 'OK' : 'fail X_EN'}</span>`;
+    b.onclick = () => selectApproach(i);
+    tabsEl.appendChild(b);
+  });
+
+  // corpus badges
+  if (B.union_unique) fillLeaderboard();
+  document.getElementById('union-unique').textContent =
+    B.union_unique.toLocaleString() + (B.union_gt_10000 ? ' (>10k)' : ' (≤10k)');
+  if (B.corpus) document.getElementById('corpus-name').textContent = B.corpus;
+  if (B.word_counts) {
+    const row = document.getElementById('corpus-badges');
+    const extra = document.createElement('div');
+    extra.className = 'badge';
+    extra.innerHTML = 'Page words: <strong>' + B.langs.map(L => L + ' ' + (B.word_counts[L]||0).toLocaleString()).join(' · ') + '</strong>';
+    row.appendChild(extra);
+  }
+
+  function selectApproach(i) {
+    current = approaches[i];
+    [...tabsEl.children].forEach((el, j) => el.classList.toggle('active', j === i));
+    titleEl.textContent = current.title;
+    subEl.textContent = current.subtitle;
+    descEl.innerHTML = escapeHtml(current.description);
+    howEl.innerHTML = '<strong>How tokens look:</strong> ' + escapeHtml(current.how_tokens);
+    renderMetrics(current);
+    renderXRows(current);
+    renderAll();
+  }
+
+  function renderXRows(a) {
+    const m = a.metrics || {};
+    const Xw = m.X_words || {};
+    const Xf = m.X_fixed || {};
+    const mk = (X) => B.langs.map(L => {
+      const v = X[L];
+      const num = (v === undefined || v === null) ? null : Number(v);
+      const over = num !== null && num > 1.2 && L === 'EN';
+      const disp = num === null ? '—' : num.toFixed(3);
+      return `<div class="x-chip ${over ? 'over' : ''}"><div class="lang">${L}</div><div class="xv">${disp}</div></div>`;
+    }).join('');
+    document.getElementById('x-words').innerHTML = mk(Xw);
+    document.getElementById('x-fixed').innerHTML = mk(Xf);
+    const hardW = m.hard_ok_words !== undefined ? m.hard_ok_words : a.hard_ok;
+    const hardF = m.hard_ok_fixed;
+    const ban = document.getElementById('hard-banner');
+    if (hardW === false) {
+      ban.innerHTML = `<div class="warn-banner">⚠ <strong>hard_ok_words failed</strong>: X<sub>EN</sub> = ${(Xw.EN||0).toFixed?.(3) || Xw.EN} > 1.2 (words denom). Full-page corpus makes pure BPE / capped whole-words harder.</div>`;
+    } else if (hardF === false) {
+      ban.innerHTML = `<div class="warn-banner">ℹ words-denom hard_ok OK, but under <strong>fixed D=5000</strong> X<sub>EN</sub> = ${(Xf.EN||0).toFixed?.(3) || Xf.EN} fails ≤1.2 (page is ~30k EN words).</div>`;
+    } else {
+      ban.innerHTML = `<div class="warn-banner" style="border-color:rgba(61,222,165,.4);color:#b8ffd7">✓ Passes hard constraints on words denom (and fixed if marked).</div>`;
+    }
+  }
+
+  function honestyClass(h) {
+    if (h >= 8) return 'good';
+    if (h >= 5) return 'warn';
+    return 'bad';
+  }
+
+  function renderMetrics(a) {
+    const m = a.metrics || {};
+    const sw = m.score_words;
+    const sf = m.score_fixed;
+    const fmtScore = (s) => {
+      if (s === 'inf' || s === Infinity) return '∞';
+      if (s === undefined || s === null) return '—';
+      const n = Number(s);
+      if (!isFinite(n)) return String(s);
+      if (n >= 1e6) return n.toExponential(2);
+      if (n >= 100) return Math.round(n).toLocaleString();
+      return n.toFixed(2);
+    };
+    const items = [
+      { k: 'Honesty', v: a.honesty + ' / 10', cls: honestyClass(a.honesty) },
+      { k: 'Score (words)', v: fmtScore(sw !== undefined ? sw : a.score_num), cls: 'good' },
+      { k: 'Score (÷5000)', v: fmtScore(sf), cls: '' },
+      { k: 'Vocab', v: String(m.vocab_size || '—'), cls: '' },
+      { k: 'Hard OK words', v: (m.hard_ok_words !== undefined ? m.hard_ok_words : a.hard_ok) ? 'yes' : 'no',
+        cls: (m.hard_ok_words !== undefined ? m.hard_ok_words : a.hard_ok) ? 'good' : 'bad' },
+      { k: 'Hard OK fixed', v: m.hard_ok_fixed ? 'yes' : 'no', cls: m.hard_ok_fixed ? 'good' : 'bad' },
+      { k: 'Kind', v: a.kind, cls: '' },
+    ];
+    if (m.coverage_pct_token_occ) {
+      const c = m.coverage_pct_token_occ;
+      items.push({ k: 'Word cover %', v: B.langs.map(L => L + ':' + c[L]).join(' '), cls: 'warn' });
+    }
+    if (m.words_selected) items.push({ k: 'Words in vocab', v: String(m.words_selected) + ' / ' + (m.union_unique || '—'), cls: '' });
+    if (m.T_star) items.push({ k: 'T* (packed)', v: JSON.stringify(m.T_star), cls: '' });
+    if (m.T) items.push({ k: 'T full page', v: B.langs.map(L => L + ':' + m.T[L]).join(' '), cls: '' });
+    metricsEl.innerHTML = items.map(it =>
+      `<div class="metric"><div class="k">${escapeHtml(it.k)}</div><div class="v ${it.cls}">${escapeHtml(it.v)}</div></div>`
+    ).join('');
+  }
+
+  function renderAll() {
+    const n = +lenRange.value;
+    lenVal.textContent = n;
+    // reuse state if lang fixed and same len? always re-render encode
+    if (!state.words.length) {
+      state = pickSnippet(langSelect.value, n);
+    }
+    // if word length doesn't match slider, re-slice from same start if possible
+    if (state.words.length !== n) {
+      const all = B.words[state.lang];
+      const maxStart = Math.max(0, all.length - n);
+      const start = Math.min(state.start, maxStart);
+      state = { lang: state.lang, start, words: all.slice(start, start + n) };
+    }
+    langSelect.value = state.lang;
+    langBadge.innerHTML = `<span class="lang-pill lang-${state.lang}">${state.lang} · ${B.lang_labels[state.lang]}</span>`;
+    snippetEl.textContent = state.words.join(' ');
+    snippetMeta.innerHTML = `
+      <span>word range [${state.start}, ${state.start + state.words.length})</span>
+      <span>snippet words: ${state.words.length}</span>
+      <span>page words: ${B.word_counts[state.lang]}</span>
+    `;
+
+    const { tokens, perWord, mode } = encodeApproach(
+      current, state.lang, state.start, state.words
+    );
+    const fertility = tokens.length / Math.max(1, state.words.length);
+
+    tokSummary.innerHTML = `
+      <strong style="color:var(--text)">${tokens.length}</strong> tokens ·
+      <strong style="color:var(--text)">${state.words.length}</strong> words ·
+      fertility X<sub>snippet</sub> = <strong style="color:var(--accent)">${fertility.toFixed(3)}</strong>
+      · mode <code>${mode}</code>
+      · approach <code>${current.id}</code>
+    `;
+    fertilityBar.style.width = Math.min(100, fertility * 40) + '%';
+
+    tokensEl.innerHTML = tokens.map((p, i) =>
+      `<span class="tok ${p.kind}" title="${escapeHtml(p.kind)}"><span class="idx">${i}</span>${escapeHtml(fmtTok(p.t))}</span>`
+    ).join('');
+
+    alignmentEl.innerHTML = state.words.map((w, i) => {
+      const pieces = perWord[i] || [];
+      const chips = pieces.map(p =>
+        `<span class="tok ${p.kind}">${escapeHtml(fmtTok(p.t))}</span>`
+      ).join(' ');
+      return `<div class="align-row">
+        <div class="align-word">${escapeHtml(w)}</div>
+        <div class="token-stream" style="max-height:none;margin:0">${chips || '<span class="tok unk">∅</span>'}</div>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('btn-random').onclick = () => {
+    const lang = B.langs[randInt(B.langs.length)];
+    state = pickSnippet(lang, +lenRange.value);
+    renderAll();
+  };
+  document.getElementById('btn-random-lang').onclick = () => {
+    state = pickSnippet(langSelect.value, +lenRange.value);
+    renderAll();
+  };
+  langSelect.onchange = () => {
+    state = pickSnippet(langSelect.value, +lenRange.value);
+    renderAll();
+  };
+  lenRange.oninput = () => renderAll();
+
+  // init
+  selectApproach(0);
+  state = pickSnippet('EN', +lenRange.value);
+  renderAll();
+  // also roll once across langs
+  setTimeout(() => {
+    state = pickSnippet(B.langs[randInt(4)], +lenRange.value);
+    renderAll();
+  }, 50);
+})();
+</script>
+</body>
+</html>
