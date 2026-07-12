@@ -9,3 +9,6 @@ venv/
 .mypy_cache/
 .ruff_cache/
 .pytest_cache/
+
+# created a custom skill for myself. have created a repo for it instead
+demo/lab/axiom_collector/**
