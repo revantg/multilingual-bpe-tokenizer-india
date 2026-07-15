@@ -12,12 +12,20 @@ def _():
     from dataclasses import dataclass
     from collections import Counter, defaultdict
     from pathlib import Path
-    from heapq import heappop_max, heapify_max
+    from heapq import heappop_max, heapify_max, heappush_max
     from collections import defaultdict
 
     from pprint import pprint
 
-    return Counter, Path, dataclass, defaultdict, heapify_max, heappop_max
+    return (
+        Counter,
+        Path,
+        dataclass,
+        defaultdict,
+        heapify_max,
+        heappop_max,
+        heappush_max,
+    )
 
 
 @app.cell
@@ -258,14 +266,13 @@ def _(MergeResult):
 @app.cell
 def _(
     Counter,
-    created_symbol,
     dataclass,
     defaultdict,
+    en_txt,
     heapify_max,
     heappop_max,
     heappush_max,
     merge_optimized,
-    words_freq,
 ):
     @dataclass
     class GeneratePairsResult:
@@ -345,6 +352,8 @@ def _(
         ]
         heapify_max(pair_cnt_max_heap)
 
+        merges: list[tuple[str, str]] = []
+
         while len(vocab) < vocab_size:
             while len(pair_cnt_max_heap):
                 cnt, top_pair = heappop_max(pair_cnt_max_heap)
@@ -356,6 +365,8 @@ def _(
                 word_pairs = word_to_pair_map[word]
                 for ind in range(len(word_pairs) - 1):
                     updated_pairs.add((word_pairs[ind], word_pairs[ind + 1]))
+
+            merges.append(top_pair)
 
             # words containing the top pair
             top_words_tokens = [
@@ -391,27 +402,27 @@ def _(
                     pair_to_word_map[word_token_pair].add("".join(word_tokens))
                     updated_pairs.add(word_token_pair)
 
-            generate_inv_pairs_result = gen_pairs_reverse_index(
-                result.updated_seq, words_freq
-            )
+            # generate_inv_pairs_result = gen_pairs_reverse_index(
+            #     result.updated_seq, words_freq
+            # )
 
-            for (
-                pair,
-                words,
-            ) in generate_inv_pairs_result.rev_pair_index.items():
-                for word in words:
-                    pair_to_word_map[pair].add(word_tokens)
+            # for (
+            #     pair,
+            #     words,
+            # ) in generate_inv_pairs_result.rev_pair_index.items():
+            #     for word in words:
+            #         pair_to_word_map[pair].add(word_tokens)
 
-            vocab[created_symbol] = len(vocab) + 1
+            vocab[result.created_symbol] = len(vocab) + 1
 
             # update the heap
             for pair in updated_pairs:
                 heappush_max(pair_cnt_max_heap, (pair_counts[pair], pair))
 
-        return None
+        return vocab, merges
 
     inp = "low lower lowest flow"
-    train_bpe_optimized(inp, 10)
+    train_bpe_optimized(en_txt, 1000)
     return
 
 
