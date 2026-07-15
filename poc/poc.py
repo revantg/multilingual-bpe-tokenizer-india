@@ -10,14 +10,14 @@ def _():
     # Building a from-scratch BPE tokenizer for India Wikipedia (EN/HI/TE/SA).
     # heapq / defaultdict added for the optimized (word-dedup + heap) trainer.
     from dataclasses import dataclass
-    from collections import Counter
+    from collections import Counter, defaultdict
     from pathlib import Path
-    import heapq
+    from heapq import heappop_max, heapify_max
     from collections import defaultdict
 
     from pprint import pprint
 
-    return Counter, Path, dataclass, heapq
+    return Counter, Path, dataclass, defaultdict, heapify_max, heappop_max
 
 
 @app.cell
@@ -83,7 +83,7 @@ def _(Counter, hi_pairs, hi_txt):
         for i_ind, i in enumerate(range(min(cnt, 10))):
             ind = hi_txt.find(ch, prev)
             prev = ind + 1
-            print(" " * 5, i_ind, ":", hi_txt[ind: ind+200])
+            print(" " * 5, i_ind, ":", hi_txt[ind : ind + 200])
 
         print("-" * 100)
         print()
@@ -148,27 +148,59 @@ def _(MergeResult):
         new_seq: list[str] = []
         prev = 0
         for ind in merge_list:
-            new_seq += seq[prev: ind]
+            new_seq += seq[prev:ind]
             new_seq.append(sym1 + sym2)
             prev = ind + 2
 
         new_seq += seq[prev:]
 
-        return MergeResult(updated_seq=new_seq, created_symbol=sym1+sym2)
+        return MergeResult(updated_seq=new_seq, created_symbol=sym1 + sym2)
 
     # sanity check: "l"+"o" -> "lo", then "lo"+"w" -> "low", chained correctly
     sequence = list("low lower lowest flow")
     iter1 = merge_naive(sequence, "l", "o")
     print(f"after iter1={iter1}")
     assert iter1 == MergeResult(
-        updated_seq=['lo', 'w', ' ', 'lo', 'w', 'e', 'r', ' ', 'lo', 'w', 'e', 's', 't', ' ', 'f', 'lo', 'w'],
-        created_symbol='lo'
+        updated_seq=[
+            "lo",
+            "w",
+            " ",
+            "lo",
+            "w",
+            "e",
+            "r",
+            " ",
+            "lo",
+            "w",
+            "e",
+            "s",
+            "t",
+            " ",
+            "f",
+            "lo",
+            "w",
+        ],
+        created_symbol="lo",
     )
     iter2 = merge_naive(iter1.updated_seq, "lo", "w")
     print(f"after iter2={iter2}")
     assert iter2 == MergeResult(
-        updated_seq=['low', ' ', 'low', 'e', 'r', ' ', 'low', 'e', 's', 't', ' ', 'f', 'low'],
-        created_symbol='low'
+        updated_seq=[
+            "low",
+            " ",
+            "low",
+            "e",
+            "r",
+            " ",
+            "low",
+            "e",
+            "s",
+            "t",
+            " ",
+            "f",
+            "low",
+        ],
+        created_symbol="low",
     )
     return (merge_naive,)
 
@@ -188,24 +220,7 @@ def _(dataclass):
 
 
 @app.cell
-def _(Counter, MergeResult, en_txt, heapq, max_heap, train_bpe, word):
-    # ── OPTIMIZED path (word-dedup + inverted index + max-heap) — WORK IN PROGRESS ──
-    # Goal: avoid rescanning the full corpus every merge iteration.
-    #   1. word_freq        : dedupe corpus into {unique word: frequency}
-    #   2. pair_counts       : pair frequencies weighted by word_freq, computed
-    #                          ONCE per unique word (not once per occurrence)
-    #   3. pair_to_word_map  : inverted index, pair -> {words containing it},
-    #                          so a merge only needs to touch AFFECTED words
-    #   4. max-heap          : O(log n) "find current best pair" instead of a
-    #                          fresh O(n) Counter.most_common() scan every step
-    #
-    # STATUS: not yet working -- known open bugs (see chat):
-    #   - merge_optimized(): inner loop still uses `word` instead of `word_seq`,
-    #     and does not skip the second element of a matched pair (no pointer
-    #     advance-by-2), so a match can double-count the consumed element.
-    #   - the main training while-loop body is not implemented yet (`pass`).
-    #   - trailing call still says `train_bpe(en_txt, 1)` -- should be
-    #     `train_bpe_optimized(...)` once the loop body exists.
+def _(MergeResult):
     def merge_optimized(seq_words: list[list[str]], sym1: str, sym2: str):
         """
         merge adjacent element in seq equal to symbol to one symbol
@@ -221,18 +236,82 @@ def _(Counter, MergeResult, en_txt, heapq, max_heap, train_bpe, word):
         for word_seq in seq_words:
             # word_seq is a list of tokens
             new_seq = []
-            for ind in range(0, len(word) - 1):
+            ind = 0
+            while ind + 1 < len(word_seq):
                 if word_seq[ind] == sym1 and word_seq[ind + 1] == sym2:
                     new_seq.append(new_symbol)
+                    ind += 1
                 else:
                     new_seq.append(word_seq[ind])
-                    if ind == len(word) - 2:
-                        new_seq.append(word_seq[ind + 1])
+                ind += 1
+
+            if ind == len(word_seq) - 1:
+                new_seq.append(word_seq[ind])
+
             updated_seq.append(new_seq)
-            
+
         return MergeResult(updated_seq=updated_seq, created_symbol=new_symbol)
 
-    def train_bpe_optimized(txt: str, vocab_size: int):# -> BytePairEncoder:
+    return (merge_optimized,)
+
+
+@app.cell
+def _(
+    Counter,
+    created_symbol,
+    dataclass,
+    defaultdict,
+    heapify_max,
+    heappop_max,
+    heappush_max,
+    merge_optimized,
+    words_freq,
+):
+    @dataclass
+    class GeneratePairsResult:
+        pair_counts: Counter[tuple[str, str]]
+        rev_pair_index: defaultdict[tuple[int, int], list[list[str]]]
+
+    def gen_pairs_reverse_index(
+        words: list[list[str]], words_freq: Counter[str]
+    ) -> dict[str, set[list[str]]]:
+        """
+        generate pairs for a list of words (already split)
+        example input:
+        [
+            ["lo", "w"],
+            ["lo", "w", "e", "r"],
+            ["lo", "w", "e", "s", "t"]
+        ]
+
+        output ->
+        {
+            ("lo", "w") -> [
+                ["lo", "w"],
+                ["lo", "w", "e", "r"],
+                ["lo", "w", "e", "s", "t"]
+            ],
+            ("w", "e") -> [
+                ["lo", "w", "e", "r"],
+                ["lo", "w", "e", "s", "t"]
+            ]
+        }
+        """
+        pair_counts: Counter[tuple[str, str]] = Counter()
+        rev_pair_index: defaultdict[tuple[int, int], list[str]] = defaultdict(
+            set
+        )
+
+        for word in words:
+            for ind in range(len(word) - 1):
+                pair_counts[(word[ind], word[ind + 1])] += words_freq.get(
+                    "".join(word)
+                )
+                rev_pair_index[(word[ind], word[ind + 1])].add("".join(word))
+
+        return GeneratePairsResult(pair_counts, rev_pair_index)
+
+    def train_bpe_optimized(txt: str, vocab_size: int):  # -> BytePairEncoder:
         merges: tuple[str, str] = []
 
         vocab: dict[str, int] = {ch: ind for ind, ch in enumerate(set(txt))}
@@ -241,38 +320,98 @@ def _(Counter, MergeResult, en_txt, heapq, max_heap, train_bpe, word):
         sequence = list(txt)
         new_seq: list[str] = []
 
-        # dedupe: word -> frequency count (avoids re-deriving the same word's
-        # internal pairs once per occurrence -- e.g. "India" appearing ~500x
-        # in en_txt only needs its pairs computed once, then weighted by freq)
         word_freq: Counter[str] = Counter()
         for word in txt.split():
             word_freq[word] += 1
         words_set: set[str] = word_freq.keys()
 
-        # pair_counts: frequency-weighted adjacent-pair tally, built ONCE from
-        # unique words only.
-        # pair_to_word_map: inverted index so a future merge only needs to
-        # revisit words that actually contain the winning pair.
         pair_counts: Counter[str] = Counter()
-        pair_to_word_map: dict[tuple[str, str], set[str]] = {}
-        for word in words_set:
-            for i in range(len(word) - 1):
-                pair_counts[(word[i], word[i + 1])] += word_freq[word]
-                pair_to_word_map[(word[i], word[i + 1])].add(word)
+        word_to_pair_map: dict[str, list[str]] = {
+            word: list(word) for word in words_set
+        }
 
-        pair_counts = [(cnt, pair) for pair, cnt in pair_counts.items()]
-        heapq.heapify_max(pair_counts)
-    
-        print(f"{max_heap=}")
+        pairs_reverse_idx_res = gen_pairs_reverse_index(
+            [list(w) for w in words_set], word_freq
+        )
+        pair_counts: Counter[tuple[str, str]] = (
+            pairs_reverse_idx_res.pair_counts
+        )
+        pair_to_word_map: defaultdict[tuple[str, str], list[list[str]]] = (
+            pairs_reverse_idx_res.rev_pair_index
+        )
+
+        pair_cnt_max_heap: list[tuple[int, tuple[str, str]]] = [
+            (cnt, pair) for pair, cnt in pair_counts.items()
+        ]
+        heapify_max(pair_cnt_max_heap)
 
         while len(vocab) < vocab_size:
-            pass
-        
+            while len(pair_cnt_max_heap):
+                cnt, top_pair = heappop_max(pair_cnt_max_heap)
+                if pair_counts[top_pair] == cnt:
+                    break
+
+            updated_pairs = set()
+            for word in pair_to_word_map[top_pair]:
+                word_pairs = word_to_pair_map[word]
+                for ind in range(len(word_pairs) - 1):
+                    updated_pairs.add((word_pairs[ind], word_pairs[ind + 1]))
+
+            # words containing the top pair
+            top_words_tokens = [
+                word_to_pair_map[full_word]
+                for full_word in pair_to_word_map[top_pair]
+            ]
+
+            # merge the pair inside all the selected words
+            result = merge_optimized(
+                top_words_tokens, sym1=top_pair[0], sym2=top_pair[1]
+            )
+
+            # update the word to their latest pair mapping
+            for word in result.updated_seq:
+                word_to_pair_map["".join(word)] = word
+
+            # recompute the counts and inverse index mapping of all the changed words
+
+            # remove the pair counts of the pre-merge words
+            for word in top_words_tokens:
+                for pair in zip(word[:-1], word[1:]):
+                    pair_counts[pair] -= word_freq["".join(word)]
+                    pair_to_word_map[pair].remove("".join(word))
+
+            # generate pairs after the merged sequence for each word and update pair_counts
+            for word_tokens in result.updated_seq:
+                word_tokens_pairs = zip(word_tokens[:-1], word_tokens[1:])
+
+                for word_token_pair in word_tokens_pairs:
+                    pair_counts[word_token_pair] += word_freq[
+                        "".join(word_tokens)
+                    ]
+                    pair_to_word_map[word_token_pair].add("".join(word_tokens))
+                    updated_pairs.add(word_token_pair)
+
+            generate_inv_pairs_result = gen_pairs_reverse_index(
+                result.updated_seq, words_freq
+            )
+
+            for (
+                pair,
+                words,
+            ) in generate_inv_pairs_result.rev_pair_index.items():
+                for word in words:
+                    pair_to_word_map[pair].add(word_tokens)
+
+            vocab[created_symbol] = len(vocab) + 1
+
+            # update the heap
+            for pair in updated_pairs:
+                heappush_max(pair_cnt_max_heap, (pair_counts[pair], pair))
 
         return None
 
     inp = "low lower lowest flow"
-    train_bpe(en_txt, 1)
+    train_bpe_optimized(inp, 10)
     return
 
 
@@ -302,7 +441,10 @@ def _(BytePairEncoder, Counter, en_txt, merge_naive):
 
             # print(f"before merge: {sequence=}")
             merge_res = merge_naive(sequence, sym1, sym2)
-            new_seq, created_symbol = (merge_res.updated_seq, merge_res.created_symbol)
+            new_seq, created_symbol = (
+                merge_res.updated_seq,
+                merge_res.created_symbol,
+            )
             # print(f"after merge: {new_seq=}")
 
             vocab[created_symbol] = latest_vocab_id + 1
@@ -311,10 +453,7 @@ def _(BytePairEncoder, Counter, en_txt, merge_naive):
 
             sequence = new_seq
 
-        return BytePairEncoder(
-            vocab=vocab, 
-            merges=merges
-        )
+        return BytePairEncoder(vocab=vocab, merges=merges)
 
     bpe = train_bpe_naive(en_txt, 1000)
     return
@@ -327,7 +466,9 @@ def _(BytePairEncoder, Counter, en_txt, merge_naive):
 # rule) to turn the text into token strings, then look each token up in
 # `vocab` to produce the final list of integer ids. This is the missing
 # piece that lets the tokenizer run on text it was NOT trained on.
-def encode(txt: str, vocab: dict[str, int], merges: list[tuple[str, str]]) -> list[int]:
+def encode(
+    txt: str, vocab: dict[str, int], merges: list[tuple[str, str]]
+) -> list[int]:
     pass
 
 
