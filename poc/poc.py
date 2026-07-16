@@ -99,19 +99,6 @@ def _(Counter, hi_pairs, hi_txt):
 
 
 @app.cell
-def _(hi_txt):
-    # ── Base vocab / symbol scratch ──────────────────────────────────────────
-    # initial vocab = every distinct character seen in hi_txt (starting alphabet
-    # before any merges). `symbols` kept as a separate copy for reference.
-    vocab: set[str] = set(list(hi_txt))
-    symbols: set[str] = vocab.copy()
-
-    merges = []
-    vocab
-    return
-
-
-@app.cell
 def _(dataclass):
     # ── Artifact: result of one merge operation ──────────────────────────────
     # Bundles the updated sequence together with the symbol that was actually
@@ -229,34 +216,25 @@ def _(dataclass):
 
 @app.cell
 def _(MergeResult):
-    def merge_optimized(seq_words: list[list[str]], sym1: str, sym2: str):
-        """
-        merge adjacent element in seq equal to symbol to one symbol
-        for eg. for seq = ['l', 'o', 'w', ' ', 'l', 'o', 'w', 'e', 'r']
-                 symbol = "lo"
-                new_seq = ['lo', 'w', ' ', 'lo', 'w', 'e', 'r']
-        """
-        symbol_len = len(sym1) + len(sym2)
-        updated_seq: list[list[str]] = []
-
+    def merge_optimized(
+        word_seq: list[str], sym1: str, sym2: str
+    ) -> MergeResult:
+        """Merge every non-overlapping occurrence of ``(sym1, sym2)``."""
         new_symbol = sym1 + sym2
+        updated_seq: list[str] = []
 
-        for word_seq in seq_words:
-            # word_seq is a list of tokens
-            new_seq = []
-            ind = 0
-            while ind + 1 < len(word_seq):
-                if word_seq[ind] == sym1 and word_seq[ind + 1] == sym2:
-                    new_seq.append(new_symbol)
-                    ind += 1
-                else:
-                    new_seq.append(word_seq[ind])
-                ind += 1
-
-            if ind == len(word_seq) - 1:
-                new_seq.append(word_seq[ind])
-
-            updated_seq.append(new_seq)
+        index = 0
+        while index < len(word_seq):
+            if (
+                index + 1 < len(word_seq)
+                and word_seq[index] == sym1
+                and word_seq[index + 1] == sym2
+            ):
+                updated_seq.append(new_symbol)
+                index += 2
+            else:
+                updated_seq.append(word_seq[index])
+                index += 1
 
         return MergeResult(updated_seq=updated_seq, created_symbol=new_symbol)
 
@@ -264,165 +242,138 @@ def _(MergeResult):
 
 
 @app.cell
+def _(Counter, defaultdict):
+    from typing import TypeAlias
+
+    class TokenizerStatsV2:
+        TokenPair: TypeAlias = tuple[str, str]
+
+        def __init__(
+            self,
+            pair_to_token_map: dict[TokenPair, set[str]],
+            token_to_symbols_map: dict[str, list[str]],
+            token_freq: Counter[str],
+            pair_freq: Counter[TokenPair],
+        ) -> None:
+            self.pair_to_token_map = pair_to_token_map
+            self.token_to_symbols_map = token_to_symbols_map
+            self.token_freq = token_freq
+            self.pair_freq = pair_freq
+
+        @staticmethod
+        def build_stats(raw_tokens: list[str]) -> "TokenizerStatsV2":
+            token_freq: Counter[str] = Counter(raw_tokens)
+            pair_to_token_map: dict[TokenizerStatsV2.TokenPair, set[str]] = (
+                defaultdict(set)
+            )
+            token_to_symbols_map: dict[str, list[str]] = {}
+            pair_freq: Counter[TokenizerStatsV2.TokenPair] = Counter()
+
+            for token, frequency in token_freq.items():
+                symbols: list[str] = list(token)
+                token_to_symbols_map[token] = symbols
+
+                for pair in zip(symbols, symbols[1:]):
+                    pair_freq[pair] += frequency
+                    pair_to_token_map[pair].add(token)
+
+            return TokenizerStatsV2(
+                pair_to_token_map=dict(pair_to_token_map),
+                token_to_symbols_map=token_to_symbols_map,
+                token_freq=token_freq,
+                pair_freq=pair_freq,
+            )
+
+    return TokenizerStatsV2, TypeAlias
+
+
+@app.cell
 def _(
-    Counter,
-    dataclass,
-    defaultdict,
+    TokenizerStatsV2,
+    TypeAlias,
     en_txt,
     heapify_max,
     heappop_max,
     heappush_max,
     merge_optimized,
 ):
-    @dataclass
-    class GeneratePairsResult:
-        pair_counts: Counter[tuple[str, str]]
-        rev_pair_index: defaultdict[tuple[int, int], list[list[str]]]
+    class BPETokenizer:
+        TokenPair: TypeAlias = tuple[str, str]
 
-    def gen_pairs_reverse_index(
-        words: list[list[str]], words_freq: Counter[str]
-    ) -> dict[str, set[list[str]]]:
-        """
-        generate pairs for a list of words (already split)
-        example input:
-        [
-            ["lo", "w"],
-            ["lo", "w", "e", "r"],
-            ["lo", "w", "e", "s", "t"]
-        ]
+        def __init__(
+            self,
+            corpus: list[str],
+            vocab: dict[str, int] | None = None,
+            merges: list[TokenPair] | None = None,
+        ) -> None:
+            self.vocab = {} if vocab is None else vocab
+            self.merges = [] if merges is None else merges
+            self.corpus = corpus
 
-        output ->
-        {
-            ("lo", "w") -> [
-                ["lo", "w"],
-                ["lo", "w", "e", "r"],
-                ["lo", "w", "e", "s", "t"]
-            ],
-            ("w", "e") -> [
-                ["lo", "w", "e", "r"],
-                ["lo", "w", "e", "s", "t"]
+        def train_bpe_optimized(self, vocab_size: int) -> None:
+            stats = TokenizerStatsV2.build_stats(raw_tokens=self.corpus)
+            pair_to_token_map = stats.pair_to_token_map
+            token_to_symbols_map = stats.token_to_symbols_map
+            token_freq = stats.token_freq
+            pair_freq = stats.pair_freq
+
+            pair_freq_max_heap = [
+                (count, pair) for pair, count in pair_freq.items()
             ]
-        }
-        """
-        pair_counts: Counter[tuple[str, str]] = Counter()
-        rev_pair_index: defaultdict[tuple[int, int], list[str]] = defaultdict(
-            set
-        )
+            heapify_max(pair_freq_max_heap)
 
-        for word in words:
-            for ind in range(len(word) - 1):
-                pair_counts[(word[ind], word[ind + 1])] += words_freq.get(
-                    "".join(word)
-                )
-                rev_pair_index[(word[ind], word[ind + 1])].add("".join(word))
+            while len(self.vocab) < vocab_size and pair_freq_max_heap:
+                top_pair: BPETokenizer.TokenPair | None = None
+                while pair_freq_max_heap:
+                    count, candidate_pair = heappop_max(pair_freq_max_heap)
+                    if count > 0 and pair_freq[candidate_pair] == count:
+                        top_pair = candidate_pair
+                        break
 
-        return GeneratePairsResult(pair_counts, rev_pair_index)
-
-    def train_bpe_optimized(txt: str, vocab_size: int):  # -> BytePairEncoder:
-        merges: tuple[str, str] = []
-
-        vocab: dict[str, int] = {ch: ind for ind, ch in enumerate(set(txt))}
-        latest_vocab_id = len(vocab) - 1
-
-        sequence = list(txt)
-        new_seq: list[str] = []
-
-        word_freq: Counter[str] = Counter()
-        for word in txt.split():
-            word_freq[word] += 1
-        words_set: set[str] = word_freq.keys()
-
-        pair_counts: Counter[str] = Counter()
-        word_to_pair_map: dict[str, list[str]] = {
-            word: list(word) for word in words_set
-        }
-
-        pairs_reverse_idx_res = gen_pairs_reverse_index(
-            [list(w) for w in words_set], word_freq
-        )
-        pair_counts: Counter[tuple[str, str]] = (
-            pairs_reverse_idx_res.pair_counts
-        )
-        pair_to_word_map: defaultdict[tuple[str, str], list[list[str]]] = (
-            pairs_reverse_idx_res.rev_pair_index
-        )
-
-        pair_cnt_max_heap: list[tuple[int, tuple[str, str]]] = [
-            (cnt, pair) for pair, cnt in pair_counts.items()
-        ]
-        heapify_max(pair_cnt_max_heap)
-
-        merges: list[tuple[str, str]] = []
-
-        while len(vocab) < vocab_size:
-            while len(pair_cnt_max_heap):
-                cnt, top_pair = heappop_max(pair_cnt_max_heap)
-                if pair_counts[top_pair] == cnt:
+                if top_pair is None:
                     break
 
-            updated_pairs = set()
-            for word in pair_to_word_map[top_pair]:
-                word_pairs = word_to_pair_map[word]
-                for ind in range(len(word_pairs) - 1):
-                    updated_pairs.add((word_pairs[ind], word_pairs[ind + 1]))
+                merged_token = "".join(top_pair)
+                if merged_token not in self.vocab:
+                    self.vocab[merged_token] = len(self.vocab)
+                self.merges.append(top_pair)
 
-            merges.append(top_pair)
+                tokens = pair_to_token_map.get(top_pair, set()).copy()
+                updated_pairs: set[BPETokenizer.TokenPair] = set()
 
-            # words containing the top pair
-            top_words_tokens = [
-                word_to_pair_map[full_word]
-                for full_word in pair_to_word_map[top_pair]
-            ]
+                for token in tokens:
+                    symbols = token_to_symbols_map[token]
+                    for pair in zip(symbols, symbols[1:]):
+                        pair_freq[pair] -= token_freq[token]
+                        pair_to_token_map[pair].discard(token)
+                        updated_pairs.add(pair)
 
-            # merge the pair inside all the selected words
-            result = merge_optimized(
-                top_words_tokens, sym1=top_pair[0], sym2=top_pair[1]
-            )
+                    updated_seq = merge_optimized(
+                        symbols, *top_pair
+                    ).updated_seq
+                    token_to_symbols_map[token] = updated_seq
 
-            # update the word to their latest pair mapping
-            for word in result.updated_seq:
-                word_to_pair_map["".join(word)] = word
+                    for pair in zip(updated_seq, updated_seq[1:]):
+                        pair_freq[pair] += token_freq[token]
+                        pair_to_token_map.setdefault(pair, set()).add(token)
+                        updated_pairs.add(pair)
 
-            # recompute the counts and inverse index mapping of all the changed words
+                for pair in updated_pairs:
+                    if pair_freq[pair] > 0:
+                        heappush_max(
+                            pair_freq_max_heap, (pair_freq[pair], pair)
+                        )
 
-            # remove the pair counts of the pre-merge words
-            for word in top_words_tokens:
-                for pair in zip(word[:-1], word[1:]):
-                    pair_counts[pair] -= word_freq["".join(word)]
-                    pair_to_word_map[pair].remove("".join(word))
-
-            # generate pairs after the merged sequence for each word and update pair_counts
-            for word_tokens in result.updated_seq:
-                word_tokens_pairs = zip(word_tokens[:-1], word_tokens[1:])
-
-                for word_token_pair in word_tokens_pairs:
-                    pair_counts[word_token_pair] += word_freq[
-                        "".join(word_tokens)
-                    ]
-                    pair_to_word_map[word_token_pair].add("".join(word_tokens))
-                    updated_pairs.add(word_token_pair)
-
-            # generate_inv_pairs_result = gen_pairs_reverse_index(
-            #     result.updated_seq, words_freq
-            # )
-
-            # for (
-            #     pair,
-            #     words,
-            # ) in generate_inv_pairs_result.rev_pair_index.items():
-            #     for word in words:
-            #         pair_to_word_map[pair].add(word_tokens)
-
-            vocab[result.created_symbol] = len(vocab) + 1
-
-            # update the heap
-            for pair in updated_pairs:
-                heappush_max(pair_cnt_max_heap, (pair_counts[pair], pair))
-
-        return vocab, merges
+            print("=" * 20, "FINAL", "=" * 20)
+            print(f"vocabulary size: {len(self.vocab)}")
+            print(f"merges learned: {len(self.merges)}")
 
     inp = "low lower lowest flow"
-    train_bpe_optimized(en_txt, 1000)
+    vocab = {symbol: index for index, symbol in enumerate(set(en_txt))}
+    print(f"initial len vocab=", len(vocab))
+    tokenizer = BPETokenizer(corpus=en_txt.split(), vocab=vocab)
+    tokenizer.train_bpe_optimized(2000)
+    print(tokenizer.merges)
     return
 
 
