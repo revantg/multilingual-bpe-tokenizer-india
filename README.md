@@ -1,5 +1,7 @@
 # Multilingual BPE tokenizer — India Wikipedia
 
+**Note:** The BPE proof-of-concept files (`poc.py` and `naive_bpe.py`) are handwritten and were not written by agents.
+
 This repository is the solution to the tokenizer assignment below (English, Hindi, Telugu, Sanskrit; shared 10 000-token vocab; score $1000 / (X_{\max}-X_{\min})$).
 
 ---
