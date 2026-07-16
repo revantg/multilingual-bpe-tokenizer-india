@@ -46,55 +46,13 @@ def _(Path):
     hi_txt = read_file(hi_path)
     te_txt = read_file(te_path)
     sa_txt = read_file(sa_path)
-    return en_txt, hi_txt, sa_txt, te_txt
+    return (en_txt,)
 
 
 @app.cell
 def _(en_txt):
     # eyeball the raw English text
     print(en_txt)
-    return
-
-
-@app.cell
-def _(en_txt, hi_txt, sa_txt, te_txt):
-    # ── Naive adjacent-pair construction (flat character stream) ────────────
-    # creating all adjacent symbols list
-    # list1 -> some_string
-    # list2 -> ome_string
-    # zip(list1, list2)
-    # NOTE: this scans the ENTIRE raw text char-by-char, no word splitting/
-    # dedup yet -- kept here as the first exploratory pass per language.
-
-    en_pairs = list(zip(list(en_txt[:-1]), list(en_txt[1:])))
-    en_pairs = ["".join(p) for p in en_pairs]
-
-    hi_pairs = list(zip(list(hi_txt[:-1]), list(hi_txt[1:])))
-    hi_pairs = ["".join(p) for p in hi_pairs]
-
-    te_pairs = list(zip(list(te_txt[:-1]), list(te_txt[1:])))
-    te_pairs = ["".join(p) for p in te_pairs]
-
-    sa_pairs = list(zip(list(sa_txt[:-1]), list(sa_txt[1:])))
-    sa_pairs = ["".join(p) for p in sa_pairs]
-    return (hi_pairs,)
-
-
-@app.cell
-def _(Counter, hi_pairs, hi_txt):
-    # just trying to see where do the top most pairs occur in the dataset
-    for ch, cnt in Counter(hi_pairs).most_common(10):
-        print("-" * 100)
-        print("-" * 100)
-        print(ch)
-        prev = 0
-        for i_ind, i in enumerate(range(min(cnt, 10))):
-            ind = hi_txt.find(ch, prev)
-            prev = ind + 1
-            print(" " * 5, i_ind, ":", hi_txt[ind : ind + 200])
-
-        print("-" * 100)
-        print()
     return
 
 
@@ -110,108 +68,6 @@ def _(dataclass):
         created_symbol: str
 
     return (MergeResult,)
-
-
-@app.cell
-def _(MergeResult):
-    # ── merge_naive: reference/correctness implementation ────────────────────
-    # Operates on ONE FLAT sequence (whole text as a single list of symbols).
-    # Compares whole adjacent LIST ELEMENTS (sym1, sym2) directly -- not string
-    # character-indexing -- so it stays correct even once elements are already
-    # multi-character merged tokens (e.g. matching ('lo','w'), not decomposing
-    # "low" into characters).
-    def merge_naive(seq: list[str], sym1: str, sym2) -> MergeResult:
-        """
-        merge adjacent element in seq equal to symbol to one symbol
-        for eg. for seq = ['l', 'o', 'w', ' ', 'l', 'o', 'w', 'e', 'r']
-                 symbol = "lo"
-                new_seq = ['lo', 'w', ' ', 'lo', 'w', 'e', 'r']
-        """
-        symbol_len = len(sym1) + len(sym2)
-        merge_list: list[int] = []
-
-        for i in range(0, len(seq) - 1):
-            match = True
-            if seq[i] == sym1 and seq[i + 1] == sym2:
-                merge_list.append(i)
-
-        if len(merge_list) == 0:
-            return MergeResult(updated_seq=seq, created_symbol="")
-
-        # print(f"{merge_list=}")
-
-        new_seq: list[str] = []
-        prev = 0
-        for ind in merge_list:
-            new_seq += seq[prev:ind]
-            new_seq.append(sym1 + sym2)
-            prev = ind + 2
-
-        new_seq += seq[prev:]
-
-        return MergeResult(updated_seq=new_seq, created_symbol=sym1 + sym2)
-
-    # sanity check: "l"+"o" -> "lo", then "lo"+"w" -> "low", chained correctly
-    sequence = list("low lower lowest flow")
-    iter1 = merge_naive(sequence, "l", "o")
-    print(f"after iter1={iter1}")
-    assert iter1 == MergeResult(
-        updated_seq=[
-            "lo",
-            "w",
-            " ",
-            "lo",
-            "w",
-            "e",
-            "r",
-            " ",
-            "lo",
-            "w",
-            "e",
-            "s",
-            "t",
-            " ",
-            "f",
-            "lo",
-            "w",
-        ],
-        created_symbol="lo",
-    )
-    iter2 = merge_naive(iter1.updated_seq, "lo", "w")
-    print(f"after iter2={iter2}")
-    assert iter2 == MergeResult(
-        updated_seq=[
-            "low",
-            " ",
-            "low",
-            "e",
-            "r",
-            " ",
-            "low",
-            "e",
-            "s",
-            "t",
-            " ",
-            "f",
-            "low",
-        ],
-        created_symbol="low",
-    )
-    return (merge_naive,)
-
-
-@app.cell
-def _(dataclass):
-    # ── Trained tokenizer artifact ───────────────────────────────────────────
-    # vocab  : token string -> integer id (used for encode's final id lookup)
-    # merges : ORDERED list of (sym1, sym2) rules -- order matters, encode()
-    #          must replay these in the exact order they were learned.
-    @dataclass
-    class BytePairEncoder:
-        vocab: dict[str, int]
-        merges: list[tuple[str, str]]
-
-    return (BytePairEncoder,)
 
 
 @app.cell
@@ -374,64 +230,8 @@ def _(
     tokenizer = BPETokenizer(corpus=en_txt.split(), vocab=vocab)
     tokenizer.train_bpe_optimized(2000)
     print(tokenizer.merges)
+    print(tokenizer.vocab)
     return
-
-
-@app.cell
-def _(BytePairEncoder, Counter, en_txt, merge_naive):
-    # ── NAIVE trainer: correct, but full O(n) rescan every merge iteration ──
-    # Trains on a single flat character sequence (no word-dedup, no heap).
-    # Confirmed working end-to-end: records merges in order AND reads
-    # created_symbol from merge_naive()'s own return value (no independent
-    # recompute of the new token -- vocab and sequence stay consistent).
-    # This is the reference/baseline; train_bpe_optimized above is the
-    # in-progress faster replacement for real-corpus scale.
-    def train_bpe_naive(txt: str, vocab_size: int) -> BytePairEncoder:
-        symbols: set[str] = set(list(txt))
-        merges: tuple[str, str] = []
-
-        vocab: dict[str, int] = {ch: ind for ind, ch in enumerate(symbols)}
-        latest_vocab_id = len(vocab) - 1
-
-        sequence = list(txt)
-        new_seq: list[str] = []
-
-        while len(vocab) < vocab_size:
-            pairs = list(zip(list(sequence[:-1]), list(sequence[1:])))
-            (sym1, sym2), _cnt = Counter(pairs).most_common(1)[0]
-            print(f"{(sym1, sym2)=} {_cnt=}")
-
-            # print(f"before merge: {sequence=}")
-            merge_res = merge_naive(sequence, sym1, sym2)
-            new_seq, created_symbol = (
-                merge_res.updated_seq,
-                merge_res.created_symbol,
-            )
-            # print(f"after merge: {new_seq=}")
-
-            vocab[created_symbol] = latest_vocab_id + 1
-            latest_vocab_id += 1
-            merges.append((sym1, sym2))
-
-            sequence = new_seq
-
-        return BytePairEncoder(vocab=vocab, merges=merges)
-
-    bpe = train_bpe_naive(en_txt, 1000)
-    return
-
-
-@app.function
-# ── encode: NOT YET IMPLEMENTED ──────────────────────────────────────────
-# Should: take raw text + a trained BytePairEncoder (vocab, merges), replay
-# every rule in `merges` IN ORDER (reusing merge_naive/merge_optimized per
-# rule) to turn the text into token strings, then look each token up in
-# `vocab` to produce the final list of integer ids. This is the missing
-# piece that lets the tokenizer run on text it was NOT trained on.
-def encode(
-    txt: str, vocab: dict[str, int], merges: list[tuple[str, str]]
-) -> list[int]:
-    pass
 
 
 if __name__ == "__main__":
