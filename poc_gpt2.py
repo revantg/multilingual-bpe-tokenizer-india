@@ -315,6 +315,14 @@ def _(
 
 
 @app.cell
+def _(en_txt, pretokenize):
+    from random import randint
+    rand_ind = randint(0, 100000)
+    pretokenize(en_txt)[rand_ind:rand_ind + 20]
+    return
+
+
+@app.cell
 def _(BPETokenizer, en_txt, hi_txt, pretokenize, sa_txt, te_txt):
     # ── Train on the pooled multilingual corpus, then round-trip demo ───────
     raw_pretokens: list[str] = []
@@ -345,6 +353,120 @@ def _(BPETokenizer, en_txt, hi_txt, pretokenize, sa_txt, te_txt):
         "fallback roundtrip_ok:",
         tokenizer.decode(fallback_ids) == fallback_demo,
     )
+    return
+
+
+@app.cell
+def _(en_txt, hi_txt, sa_txt, te_txt):
+    import re as _re
+
+    # ── Fertility metric per the ACTUAL assignment (fetched live via the tsai
+    # skill, Axiom "Session 2 Assignment QnA"):
+    #
+    #   "(Total English tokens)/(Total English Vocab, say 5000 words)
+    #    must be 1.2 or less, let's call this X1"
+    #
+    # "Total <Language> Vocab" = the count of DISTINCT words in that language's
+    # page -- i.e. D_L is a UNIQUE-word count, not a raw running word count.
+    # (An earlier pass in this repo's README used raw word count for D_L; that
+    # does not match the assignment's own "Vocab" wording, so it is corrected
+    # here.)
+    #
+    # A "word" is a run of Latin letters (with an internal apostrophe),
+    # Devanagari script, Telugu script, or digits -- light-cleaned first (drop
+    # code fences, unwrap markdown image/link syntax to their label text, strip
+    # URLs and heading markers) so markdown noise never inflates the count.
+    _WORD_RE = _re.compile(
+        r"[A-Za-z]+(?:'[A-Za-z]+)?|"
+        r"[\u0900-\u097F]+|"
+        r"[\u0C00-\u0C7F]+|"
+        r"\d+"
+    )
+
+    def clean_for_word_count(text: str) -> str:
+        text = _re.sub(r"```.*?```", " ", text, flags=_re.S)
+        text = _re.sub(r"!\[.*?\]\(.*?\)", " ", text)
+        text = _re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", text)
+        text = _re.sub(r"\[\^[^\]]+\]", " ", text)
+        text = _re.sub(r"^#{1,6}\s+", "", text, flags=_re.MULTILINE)
+        text = _re.sub(r"https?://\S+", " ", text)
+        text = _re.sub(r"[|*_`]+", " ", text)
+        text = _re.sub(r"[ \t]+", " ", text)
+        text = _re.sub(r"\n{3,}", "\n\n", text)
+        return text.strip()
+
+    fertility_corpora = {
+        "EN": clean_for_word_count(en_txt),
+        "HI": clean_for_word_count(hi_txt),
+        "TE": clean_for_word_count(te_txt),
+        "SA": clean_for_word_count(sa_txt),
+    }
+    fertility_word_lists = {
+        lang: _WORD_RE.findall(text)
+        for lang, text in fertility_corpora.items()
+    }
+    # D_L = "Total <Language> Vocab" = distinct word count (assignment wording),
+    # case-normalized so "The"/"the" count as one vocab entry.
+    fertility_D = {
+        lang: len({w.lower() for w in words})
+        for lang, words in fertility_word_lists.items()
+    }
+    fertility_D_raw_wordcount = {
+        lang: len(words) for lang, words in fertility_word_lists.items()
+    }
+    return fertility_D, fertility_D_raw_wordcount, fertility_corpora
+
+
+@app.cell
+def _(
+    BPETokenizer,
+    fertility_D,
+    fertility_D_raw_wordcount,
+    fertility_corpora,
+    pretokenize,
+):
+    # ── Train the assignment-size (10 000) shared vocab, then score ─────────
+    fertility_pretokens: list[str] = []
+    for _lang_text in fertility_corpora.values():
+        fertility_pretokens.extend(pretokenize(_lang_text))
+
+    fertility_tokenizer = BPETokenizer(corpus=fertility_pretokens)
+    fertility_tokenizer.train_bpe_optimized(10000)
+
+    fertility_T = {
+        lang: len(fertility_tokenizer.encode(text))
+        for lang, text in fertility_corpora.items()
+    }
+    fertility_X = {
+        lang: fertility_T[lang] / fertility_D[lang]
+        for lang in fertility_corpora
+    }
+
+    _x_max_lang = max(fertility_X, key=fertility_X.get)
+    _x_min_lang = min(fertility_X, key=fertility_X.get)
+    fertility_gap = fertility_X[_x_max_lang] - fertility_X[_x_min_lang]
+    fertility_score = (
+        1000.0 / fertility_gap if fertility_gap > 1e-15 else float("inf")
+    )
+
+    print(
+        "=" * 20,
+        "FERTILITY (assignment metric, D = unique-word vocab)",
+        "=" * 20,
+    )
+    print(f"vocab size: {len(fertility_tokenizer.vocab)}")
+    for lang in ("EN", "HI", "TE", "SA"):
+        print(
+            f"{lang}: D(unique)={fertility_D[lang]:6d}  "
+            f"D(raw)={fertility_D_raw_wordcount[lang]:6d}  "
+            f"T={fertility_T[lang]:6d}  X={fertility_X[lang]:.5f}"
+        )
+    print(f"X_max = {fertility_X[_x_max_lang]:.5f} ({_x_max_lang})")
+    print(f"X_min = {fertility_X[_x_min_lang]:.5f} ({_x_min_lang})")
+    print(f"gap = {fertility_gap:.6f}")
+    print(f"score = 1000 / gap = {fertility_score:.2f}")
+    print("X_EN <= 1.2 ?", fertility_X["EN"] <= 1.2)
+    print("all X <= 1.2 ?", all(v <= 1.2 for v in fertility_X.values()))
     return
 
 

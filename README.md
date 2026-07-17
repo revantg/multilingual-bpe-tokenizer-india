@@ -1,6 +1,6 @@
 # Multilingual BPE tokenizer — India Wikipedia
-
 **Note:** The BPE proof-of-concept files (`poc.py` and `naive_bpe.py`) are handwritten and were not written by agents.
+
 
 This repository is the solution to the tokenizer assignment below (English, Hindi, Telugu, Sanskrit; shared 10 000-token vocab; score $1000 / (X_{\max}-X_{\min})$).
 
@@ -8,13 +8,20 @@ This repository is the solution to the tokenizer assignment below (English, Hind
 
 ## Assignment
 
-Your assignment would be to pick India's page on Wikipedia in **English**, **Hindi**, **Telugu**, and **one more language of your choice**. Ask your AI Agent to design a BPE tokenizer in such a way that:
+Verbatim from the course (Axiom, "Session 2 Assignment QnA", fetched live via
+the `tsai-skills` skill — this is the actual assignment text, not a
+paraphrase):
 
-- you have **10 000 tokens** (your vocab) overall for all languages,
-- $(\text{Total English tokens}) / (\text{Total English words})$ must be **1.2 or less** — call this $X_1$
-- similarly ratios for Hindi, Telugu and another language are $X_2$, $X_3$, $X_4$
-- sort $X_1, X_2, X_3, X_4$ — say $X_4$ is largest and $X_1$ is least
-- your **assignment score** is $1000 / (X_4 - X_1)$
+> Your assignment would be to pick India's page on Wikipedia in English,
+> Hindi, Telugu, and one more language of your choice. Ask your AI Agent to
+> design a BPE tokenizer in such a way that:
+> - you have 10000 tokens (your vocab) overall for all languages,
+> - (Total English tokens)/(Total English Vocab, say 5000 words) must be
+>   **1.2** or less, let's call this X1
+> - Similarly ratios for your Hindi, Telugu and another language is X2, X3,
+>   X4
+> - Sort X1, X2, X3, X4.. say its X4 (largest), X2, X3, X1 (least).
+> - Your assignment score is going to be 1000/(X4 - X1).
 
 ### What you are submitting
 
@@ -23,15 +30,33 @@ Your assignment would be to pick India's page on Wikipedia in **English**, **Hin
 3. A **URL** for this widget on Netlify (or anywhere else you want to host)
 4. **Please remember** that graders will run your tokenizer themselves to confirm your scores — be careful when you present claims about your numbers
 
+### Denominator ambiguity — read carefully
+
+The brief names the denominator **"Total English Vocab, say 5000 words"** —
+not "Total English words". That phrasing points at a **distinct/unique-word
+count** for the page, not the raw running word count. This repo initially
+built (and Approach B below still reports against) the raw running word
+count. Both readings are tracked here so scores are comparable either way:
+
+| Reading of $D_L$ | Definition | EN example |
+|---|---|---|
+| Raw word count (this repo's original mapping) | every pretokenized word occurrence, duplicates included | 30 789 |
+| Unique-word "Vocab" (assignment's literal wording) | distinct words on the page, case-folded | 6 271–7 015 (cleaning-method dependent) |
+
+Using the unique-word reading shrinks $D_L$ a lot, which inflates every
+$X_L$ — a tokenizer built to satisfy $X_{\mathrm{EN}}\le1.2$ under the raw
+reading is **not** guaranteed to satisfy it under the unique-word reading.
+See `poc_gpt2.py` below for a worked example of both.
+
 ### How we mapped the brief
 
 | Brief | This folder |
 |-------|-------------|
 | English, Hindi, Telugu | India Wikipedia pages (`en` / `hi` / `te`) |
 | One more language | **Sanskrit** (`sa`) |
-| “Words” in the ratio | Pretokenized word count $D_L$ (scripts: Latin, Devanagari, Telugu + digits) |
+| “Vocab”/“words” in the ratio | Ambiguous — see above; Approach B numbers use raw pretokenized word count $D_L$ (scripts: Latin, Devanagari, Telugu + digits) |
 | $X_L$ | $T_L / D_L$ after encoding language $L$ |
-| Shared vocab | **10 000** tokens for all four languages |
+| Shared vocab | **10 000** tokens for all four languages |
 
 ---
 
@@ -88,6 +113,30 @@ Types: stored as full words vs subword fallback
 
 Method notes: [`approaches/b/README.md`](approaches/b/README.md).
 
+### `poc_gpt2.py` — byte-level BPE, both denominator readings
+
+A separate from-scratch byte-level BPE tokenizer (GPT-2-style byte alphabet,
+regex pre-tokenizer, real `encode()`/`decode()`, pooled multilingual
+training — see [`poc_gpt2.py`](poc_gpt2.py)) trained at the same 10 000
+shared-vocab cap, with **no whole-word stage**. Reported under both
+denominator readings from the ambiguity note above:
+
+| Language | $T$ | $D$ raw word count | $X$ (raw) | $D$ unique-word "Vocab" | $X$ (unique) |
+|----------|------:|------:|------:|------:|------:|
+| English | 48 413 | 30 789 | 1.572 | 6 271 | 7.720 |
+| Hindi | 44 179 | 13 630 | 3.241 | 3 540 | 12.480 |
+| Telugu | 19 093 | 4 053 | 4.711 | 2 131 | 8.960 |
+| Sanskrit | 11 828 | 2 091 | 5.657 | 1 274 | 9.284 |
+
+Raw-word reading: gap = 4.084, score = 1000/4.084 ≈ **244.85**, $X_{\mathrm{EN}}\le1.2$: **no**.
+Unique-word reading: gap = 4.760, score = 1000/4.760 ≈ **210.09**, $X_{\mathrm{EN}}\le1.2$: **no**.
+
+Both readings fail the $X_{\mathrm{EN}}\le1.2$ hard bar because this
+tokenizer has no whole-word vocab stage — every word still costs multiple
+BPE merges. It exists to demonstrate a **correct, lossless, byte-level**
+tokenizer (any UTF-8 input round-trips exactly, no `<unk>` gaps), not to
+compete on score. **Approach B remains the scored submission.**
+
 ---
 
 ## Training data
@@ -118,11 +167,14 @@ Writeups: [`approaches/`](approaches/README.md). **B** is the submission.
 | D | Equal-$X$ page packing | ~8076 | ~8.5e7 | 0.161 | 0.161 | 0.161 | 0.161 | yes |
 | E | Words + phrases + DP | 12603† | ∞ | 1.0 | 1.0 | 1.0 | 1.0 | **no†** |
 | Champion | D packing + residual words | 10k | ~8.5e7 | 0.161 | 0.161 | 0.161 | 0.161 | yes |
+| **F** | OpenAI **tiktoken** (external) | 50k–200k | **~71–495** | ~1.6 | 1.9–7.0 | 2.9–15.7 | 3.6–13.2 | **no** |
 
 \*Hard ok ≈ $X_{\mathrm{EN}}\le 1.2$ and vocab ≤ 10 000.  
 †E as stored on full pages exceeds the vocab cap.
 
 D / champion maximize the formula with page-specific multi-word slabs; comparison only — **not** the claimed product tokenizer.
+
+**F** is a production-BPE reference on the same corpus/denom (best: `o200k_base` ≈ **495**). It fails the 10k vocab bar and English \(X\le 1.2\); writeup: [`approaches/f/README.md`](approaches/f/README.md).
 
 ---
 
@@ -132,7 +184,7 @@ D / champion maximize the formula with page-specific multi-word slabs; compariso
 tokenizer-assignment/
 ├── README.md           assignment + submission numbers (this file)
 ├── AGENTS.md           repo working rules
-├── approaches/         a · b★ · c · d · e · champion
+├── approaches/         a · b★ · c · d · e · f · champion
 ├── datasets/           full_page_md★ and other corpora
 ├── demo/               slides · widget · lab
 ├── harness/            score = 1000/(maxX−minX), X = T/D
