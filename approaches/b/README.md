@@ -107,3 +107,5 @@ python3 data/grok_2/approaches/b/train_optimized_b.py \
 ## Relation to others
 
 Better score than pure **A** with a real subword floor; fairer hard_ok than naive **C** on full_page; not a packing stunt like **D**/champion.
+
+External production BPEs (**F** / tiktoken) on the same pages score ~71–495 and fail vocab ≤10k + \(X_{\mathrm{EN}}\le 1.2\); B is specialized for the assignment fairness metric, not a claim to beat GPT in general.

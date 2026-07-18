@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Story — One Tokenizer, Four Languages, Score 9953</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  html, body { height: 100%; overflow: hidden; }
+  body { background: var(--canvas); }
+
+  .deck { position: fixed; inset: 0; }
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: 72px max(6vw, 48px) 96px;
+    overflow-y: auto;
+  }
+  .slide.active { display: flex; }
+  .slide-inner { max-width: 1100px; width: 100%; margin: 0 auto; }
+
+  .slide.dark { background: var(--ink); color: var(--on-primary); }
+  .slide.dark .kicker { color: var(--stone); }
+  .slide.dark .mute { color: var(--stone); }
+  .slide.cloud { background: var(--soft-cloud); }
+
+  .kicker {
+    font-size: 12px; font-weight: 600; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--mute); margin-bottom: var(--sp-lg);
+  }
+  .slide h1.display-campaign { margin-bottom: var(--sp-xl); }
+  .slide .display-huge {
+    font-family: var(--font-display);
+    font-size: clamp(96px, 16vw, 220px); line-height: 0.85;
+    text-transform: uppercase;
+  }
+  .lede { font-size: 20px; line-height: 1.55; max-width: 780px; color: var(--charcoal); }
+  .slide.dark .lede { color: var(--hairline-soft); }
+
+  .stat-band { display: flex; gap: clamp(24px, 5vw, 72px); flex-wrap: wrap; margin-top: var(--sp-xxl); }
+  .stat-band .n {
+    font-family: var(--font-display);
+    font-size: clamp(56px, 8vw, 110px); line-height: 0.9;
+  }
+  .stat-band .l { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--mute); margin-top: var(--sp-sm); }
+  .slide.dark .stat-band .l { color: var(--stone); }
+
+  .quote-block {
+    font-family: "SF Mono", ui-monospace, Consolas, monospace;
+    font-size: clamp(16px, 2.2vw, 24px);
+    background: var(--soft-cloud);
+    padding: var(--sp-xxl);
+    margin: var(--sp-xl) 0;
+  }
+  .slide.dark .quote-block { background: #1d1d1f; color: var(--on-primary); }
+  .quote-block .unk { color: var(--sale); font-weight: 700; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-section); align-items: start; margin-top: var(--sp-xl); }
+  @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+  .check-list { list-style: none; margin-top: var(--sp-lg); }
+  .check-list li { padding: var(--sp-md) 0; border-bottom: 1px solid var(--hairline-soft); font-size: 17px; display: flex; gap: var(--sp-md); }
+  .slide.dark .check-list li { border-color: var(--charcoal); }
+  .check-list .tick { color: var(--success-bright); font-weight: 700; }
+  .check-list .cross { color: var(--sale); font-weight: 700; }
+
+  table.data { background: var(--canvas); }
+  .slide.cloud table.data { background: transparent; }
+  .slide table.data { font-size: 14px; }
+  .slide table.data th, .slide table.data td { padding: 10px 12px; }
+
+  .verdict {
+    display: inline-block; margin-top: var(--sp-xl);
+    font-size: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .verdict.bad { color: var(--sale); }
+  .verdict.good { color: var(--success); }
+
+  .feed-example {
+    background: var(--soft-cloud);
+    padding: var(--sp-lg) var(--sp-xl);
+    margin-top: var(--sp-lg);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--charcoal);
+  }
+  .feed-example .label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--mute); margin-bottom: 8px;
+  }
+  .feed-example code {
+    font-family: "SF Mono", ui-monospace, Consolas, monospace;
+    font-size: 13px; background: var(--canvas); padding: 2px 6px;
+    border-radius: 4px; display: inline-block; margin: 2px 2px 2px 0;
+  }
+  .feed-example .arrow { color: var(--mute); margin: 6px 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+  .why-not {
+    margin-top: var(--sp-md);
+    font-size: 14px; color: var(--mute); line-height: 1.5;
+    max-width: 780px;
+  }
+  .why-not strong { color: var(--ink); font-weight: 600; }
+
+  /* big-number champion slide */
+  .champ-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-sm); margin-top: var(--sp-xxl); }
+  @media (max-width: 900px) { .champ-grid { grid-template-columns: repeat(2, 1fr); } }
+  .champ-cell { background: #1d1d1f; padding: var(--sp-xl); }
+  .champ-cell .x { font-family: var(--font-display); font-size: clamp(40px, 5vw, 64px); line-height: 0.95; }
+  .champ-cell .l { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--stone); margin-top: var(--sp-xs); }
+
+  /* vs bars */
+  .vs-row { margin-top: var(--sp-xxl); }
+  .vs-label { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; margin-bottom: var(--sp-xs); }
+  .vs-bar { height: 56px; background: var(--soft-cloud); position: relative; margin-bottom: var(--sp-lg); }
+  .vs-bar .fill { position: absolute; inset: 0 auto 0 0; display: flex; align-items: center; padding-left: var(--sp-lg); }
+  .vs-bar .fill .val { font-family: var(--font-display); font-size: 32px; color: var(--on-primary); }
+  .vs-bar .fill.ours { background: var(--ink); }
+  .vs-bar .fill.theirs { background: var(--stone); }
+
+  /* chrome: nav + controls */
+  .deck-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--sp-md) var(--sp-xl);
+    pointer-events: none;
+  }
+  .deck-nav > * { pointer-events: auto; }
+  .deck-nav .brand {
+    font-family: var(--font-display); font-size: 20px; text-transform: uppercase;
+    color: var(--ink); text-decoration: none;
+  }
+  .deck.on-dark .deck-nav .brand { color: var(--on-primary); }
+
+  .deck-controls {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--sp-md) var(--sp-xl) var(--sp-lg);
+    pointer-events: none;
+  }
+  .deck-controls > * { pointer-events: auto; }
+  .slide-counter {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.1em;
+    font-variant-numeric: tabular-nums; color: var(--mute);
+  }
+  .deck.on-dark .slide-counter { color: var(--stone); }
+  .paddles { display: flex; gap: var(--sp-sm); }
+  .paddle {
+    width: 44px; height: 44px; border-radius: var(--r-full);
+    background: var(--soft-cloud); color: var(--ink);
+    border: none; cursor: pointer; font-size: 18px; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: transform 90ms ease, opacity 90ms ease;
+  }
+  .paddle:active { transform: scale(0.9); opacity: 0.7; }
+  .deck.on-dark .paddle { background: #2a2a2c; color: var(--on-primary); }
+
+  .progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--ink); z-index: 20; transition: width 200ms ease; }
+  .deck.on-dark .progress { background: var(--on-primary); }
+
+  .hint { font-size: 12px; color: var(--stone); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+<div class="progress" id="progress"></div>
+
+<nav class="deck-nav">
+  <a class="brand" href="index.html">Tokenizer / 9953</a>
+  <a class="btn btn-primary btn-sm" href="widget.html" id="nav-widget-btn">Open the widget</a>
+</nav>
+
+<!-- ================= SLIDE 1 — HERO ================= -->
+<section class="slide dark active" data-theme="dark">
+  <div class="slide-inner">
+    <div class="kicker">ERA V5 · Tokenizer assignment · English / Hindi / Telugu / Maithili</div>
+    <h1 class="display-huge">One tokenizer.<br>Four languages.<br>Zero compromise.</h1>
+    <p class="lede" style="margin-top:var(--sp-xl)">
+      How a hand-written byte-level BPE went from a scored <strong>zero</strong> to
+      <strong>9953</strong> — beating the instructor reference by <strong>+3451</strong>.
+    </p>
+    <div class="hint" style="margin-top:var(--sp-section)">Use ← → arrow keys, or click the paddles below</div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 2 — THE ASSIGNMENT ================= -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="kicker">01 · The brief</div>
+    <h1 class="display-campaign">The assignment</h1>
+    <p class="lede">
+      Train <strong>one</strong> tokenizer that treats four languages fairly.
+      Fertility X_L = tokens(L) / faithful_units(L) — a faithful unit is one contiguous
+      letter/mark/number run, or one visible punctuation/symbol character.
+    </p>
+    <div class="quote-block">score = 1000 / (X₄ − X₁) &nbsp;&nbsp;<span class="mute">// X₄ = max fertility, X₁ = min</span></div>
+    <ul class="check-list">
+      <li><span class="tick">✓</span> Vocabulary must be exactly 10000</li>
+      <li><span class="tick">✓</span> Every X_L ≤ 1.2</li>
+      <li><span class="tick">✓</span> decode(encode(text)) preserves visible characters</li>
+      <li><span class="tick">✓</span> 0 UNK tokens</li>
+      <li><span class="tick">✓</span> English penalty: score / exp(max(0, X_EN/1.2 − 1))</li>
+    </ul>
+    <p class="mute" style="margin-top:var(--sp-lg)">Tighter fertility spread across languages → higher score. Fairness, quantified.</p>
+  </div>
+</section>
+
+<!-- ================= SLIDE 3 — THE ZERO ================= -->
+<section class="slide dark" data-theme="dark">
+  <div class="slide-inner">
+    <div class="kicker">02 · Rock bottom</div>
+    <h1 class="display-campaign">We scored zero.</h1>
+    <p class="lede">
+      Our first submission was word-level with a fixed word vocabulary.
+      One innocent sentence killed it on the faithfulness gate:
+    </p>
+    <div class="quote-block">
+      India's population is 1,428,627,663.<br>
+      → India <span class="unk">&lt;UNK&gt;</span> s population is <span class="unk">&lt;UNK&gt;</span> .
+    </div>
+    <p class="lede">
+      Any token not in the word vocabulary became <span style="color:var(--sale);font-weight:600">&lt;UNK&gt;</span> — an instant fail.
+      The fix: a <strong>byte-level base</strong>. 256 byte symbols cover every possible UTF-8 input,
+      so any text decodes byte-exact and UNK becomes <strong>structurally impossible</strong>.
+    </p>
+    <ul class="check-list">
+      <li><span class="cross">✗</span> Word-level: unseen word → &lt;UNK&gt; → score 0</li>
+      <li><span class="tick">✓</span> Byte-level: every input is a sequence of known bytes → 0 UNK, lossless, forever</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= SLIDE 4 — HAND-WRITTEN BPE ================= -->
+<section class="slide cloud">
+  <div class="slide-inner">
+    <div class="kicker">03 · The engine</div>
+    <h1 class="display-campaign">Hand-written BPE.<br>Max-heap fast.</h1>
+    <div class="two-col">
+      <p class="lede">
+        No tokenizer libraries. The BPE trainer is written from scratch:
+        GPT-2-style reversible byte↔unicode map, cross-word line-level merges,
+        and an <strong>incremental max-heap</strong> of pair frequencies with lazy invalidation —
+        pop the true most-frequent pair in O(log n) instead of rescanning every pair each merge.
+      </p>
+      <div>
+        <ul class="check-list">
+          <li><span class="tick">✓</span> 256 byte symbols + 4 specials as the base alphabet</li>
+          <li><span class="tick">✓</span> Heap-backed pair selection → production-grade training speed</li>
+          <li><span class="tick">✓</span> 9740 merges learned to land vocab at exactly 10000</li>
+          <li><span class="tick">✓</span> encode() applies merges by rank; decode() maps bytes back — byte-exact</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 5 — APPROACH 1 ================= -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="kicker">04 · Approach 1 of 3 · all 5 langs en/hi/te/sa/mai · vocab 10000, 0 UNK, lossless</div>
+    <h1 class="display-campaign">Word-level: fails the gate</h1>
+    <p class="lede">Split the corpus on spaces, then run BPE <strong>inside each word only</strong>. Merges never cross a space.</p>
+    <div class="feed-example">
+      <div class="label">How we feed BPE · word-level</div>
+      <div>Raw: <code>India's population is 1,428,627,663.</code></div>
+      <div class="arrow">→ training units (one word each)</div>
+      <div>
+        <code>India's</code>
+        <code>population</code>
+        <code>is</code>
+        <code>1,428,627,663.</code>
+      </div>
+    </div>
+    <table class="data" style="margin-top:var(--sp-xl)">
+      <thead><tr><th>Lang</th><th class="num">EN</th><th class="num">HI</th><th class="num">TE</th><th class="num">SA</th><th class="num">MAI</th><th class="num">Spread</th><th class="num">Score</th></tr></thead>
+      <tbody><tr>
+        <td>Fertility X</td>
+        <td class="num">0.9841</td>
+        <td class="num" style="color:var(--sale);font-weight:600">1.5637</td>
+        <td class="num" style="color:var(--sale);font-weight:600">1.6712</td>
+        <td class="num" style="color:var(--sale);font-weight:600">1.5139</td>
+        <td class="num" style="color:var(--sale);font-weight:600">1.7119</td>
+        <td class="num">0.7278</td>
+        <td class="num">1374</td>
+      </tr></tbody>
+    </table>
+    <div class="verdict bad">✗ all ≤ 1.2 — NO. Gate failed.</div>
+    <p class="why-not"><strong>Why not best:</strong> English stays under ~1 piece/unit, but Indic scripts shatter into many subwords — four of five X &gt; 1.2. Score is low <em>and</em> the gate fails.</p>
+  </div>
+</section>
+
+<!-- ================= SLIDE 6 — APPROACH 2 ================= -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="kicker">05 · Approach 2 of 3</div>
+    <h1 class="display-campaign">Sentence-level: passes</h1>
+    <p class="lede">Split on sentence boundaries, then feed each <strong>whole sentence</strong> as one training string so merges can span word boundaries (spaces, punctuation).</p>
+    <div class="feed-example">
+      <div class="label">How we feed BPE · sentence-level</div>
+      <div>Raw paragraph with two sentences.</div>
+      <div class="arrow">→ training units (one sentence each)</div>
+      <div><code>India's population is 1,428,627,663.</code></div>
+      <div><code>It is the most populous country.</code></div>
+    </div>
+    <table class="data" style="margin-top:var(--sp-xl)">
+      <thead><tr><th>Lang</th><th class="num">EN</th><th class="num">HI</th><th class="num">TE</th><th class="num">SA</th><th class="num">MAI</th><th class="num">Spread</th><th class="num">Score</th></tr></thead>
+      <tbody><tr>
+        <td>Fertility X</td>
+        <td class="num">0.5584</td><td class="num">0.5593</td><td class="num">0.6590</td>
+        <td class="num" style="font-weight:600">0.2814</td>
+        <td class="num">0.6176</td><td class="num">0.3777</td><td class="num">2648</td>
+      </tr></tbody>
+    </table>
+    <div class="verdict good">✓ all ≤ 1.2 — YES. Score 2648.</div>
+    <p class="why-not"><strong>Why not best:</strong> Gates pass, but the spread is still wide (0.3777) — one language’s fertility collapses to 0.28 on polluted data. Score = 1000 / spread tops out at 2648.</p>
+  </div>
+</section>
+
+<!-- ================= SLIDE 7 — APPROACH 3 ================= -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="kicker">06 · Approach 3 of 3</div>
+    <h1 class="display-campaign">Paragraph-level: passes</h1>
+    <p class="lede">Split only on newlines. Each <strong>paragraph</strong> (often several sentences) is one training unit — the coarsest feed we tried.</p>
+    <div class="feed-example">
+      <div class="label">How we feed BPE · paragraph-level</div>
+      <div>Raw page with blank-line breaks.</div>
+      <div class="arrow">→ training units (one paragraph each)</div>
+      <div><code>India's population is 1,428,627,663. It is the most populous country.</code></div>
+      <div><code>Hindi and English are among its official languages.</code></div>
+    </div>
+    <table class="data" style="margin-top:var(--sp-xl)">
+      <thead><tr><th>Lang</th><th class="num">EN</th><th class="num">HI</th><th class="num">TE</th><th class="num">SA</th><th class="num">MAI</th><th class="num">Spread</th><th class="num">Score</th></tr></thead>
+      <tbody><tr>
+        <td>Fertility X</td>
+        <td class="num">0.5637</td><td class="num">0.5690</td><td class="num">0.6720</td>
+        <td class="num" style="font-weight:600">0.2881</td>
+        <td class="num">0.6391</td><td class="num">0.3839</td><td class="num">2605</td>
+      </tr></tbody>
+    </table>
+    <div class="verdict good">✓ all ≤ 1.2 — YES. Score 2605.</div>
+    <p class="why-not"><strong>Why not best:</strong> Almost identical to sentence-level (spread 0.3839 → score 2605). Bigger units didn’t tighten fairness — granularity had hit its ceiling. The bottleneck was the data, not the split size.</p>
+  </div>
+</section>
+
+<!-- ================= SLIDE 8 — CORPUS POLLUTION ================= -->
+<section class="slide dark" data-theme="dark">
+  <div class="slide-inner">
+    <div class="kicker">07 · The insight</div>
+    <h1 class="display-campaign">The corpus was polluted.</h1>
+    <p class="lede">
+      After comparing our dataset with the instructor's dataset, we realized ours was polluted —
+      scraped Indic pages full of <strong>percent-encoded URL hex</strong> and other noise that
+      BPE happily compressed into oblivion. The tokenizer wasn't learning language; it was learning garbage.
+    </p>
+    <div class="quote-block">%E0%A4%B8%E0%A4%82%E0%A4%B8%E0%A5%8D%E0%A4%95%E0%A5%83%E0%A4%A4 …</div>
+    <p class="lede">
+      The move: <strong>switch to the instructor's dataset</strong> and retrain on clean, comparable text
+      for every language. Same languages, real prose, fair comparison.
+    </p>
+  </div>
+</section>
+
+<!-- ================= SLIDE 9 — WEIGHT SWEEP ================= -->
+<section class="slide cloud">
+  <div class="slide-inner">
+    <div class="kicker">08 · The sweep</div>
+    <h1 class="display-campaign">Instructor corpus, weighted</h1>
+    <p class="lede">On the instructor dataset, sweep the language sampling weights EN/HI/TE/MAI. Every row passes all gates — the spread is what separates them.</p>
+    <table class="data" style="margin-top:var(--sp-xl)">
+      <thead><tr><th>Weights EN/HI/TE/MAI</th><th class="num">X_EN</th><th class="num">X_HI</th><th class="num">X_TE</th><th class="num">X_MAI</th><th class="num">Spread</th><th class="num">Score</th></tr></thead>
+      <tbody>
+        <tr class="winner"><td>2/2/3/2</td><td class="num">0.567</td><td class="num">0.577</td><td class="num">0.601</td><td class="num">0.667</td><td class="num">0.1005</td><td class="num">9953</td></tr>
+        <tr><td>1/1/1/1</td><td class="num">0.558</td><td class="num">0.567</td><td class="num">0.663</td><td class="num">0.657</td><td class="num">0.1048</td><td class="num">9546</td></tr>
+        <tr><td>1/1/2/1</td><td class="num">0.575</td><td class="num">0.588</td><td class="num">0.559</td><td class="num">0.681</td><td class="num">0.1218</td><td class="num">8212</td></tr>
+        <tr><td>2/3/3/2</td><td class="num">0.580</td><td class="num">0.541</td><td class="num">0.629</td><td class="num">0.671</td><td class="num">0.1298</td><td class="num">7707</td></tr>
+        <tr><td>3/3/3/2</td><td class="num">0.558</td><td class="num">0.567</td><td class="num">0.655</td><td class="num">0.715</td><td class="num">0.1574</td><td class="num">6353</td></tr>
+      </tbody>
+    </table>
+    <p class="mute" style="margin-top:var(--sp-lg)">Near-equal weights with a slight Telugu boost pull all four fertilities into a 0.567–0.667 band.</p>
+  </div>
+</section>
+
+<!-- ================= SLIDE 10 — CHAMPION ================= -->
+<section class="slide dark" data-theme="dark">
+  <div class="slide-inner">
+    <div class="kicker">09 · The result · weights EN:2 HI:2 TE:3 MAI:2 · instructor corpus</div>
+    <div class="display-huge">9953</div>
+    <div class="stat-band">
+      <div><div class="n">0.1005</div><div class="l">spread X₄ − X₁</div></div>
+      <div><div class="n">10000</div><div class="l">vocab exactly</div></div>
+      <div><div class="n">0</div><div class="l">UNK tokens</div></div>
+      <div><div class="n">1.0</div><div class="l">penalty factor</div></div>
+    </div>
+    <div class="champ-grid">
+      <div class="champ-cell"><div class="x">0.5669</div><div class="l">English · 105,649 / 186,367</div></div>
+      <div class="champ-cell"><div class="x">0.5774</div><div class="l">Hindi · 51,019 / 88,359</div></div>
+      <div class="champ-cell"><div class="x">0.6012</div><div class="l">Telugu · 21,817 / 36,292</div></div>
+      <div class="champ-cell"><div class="x">0.6674</div><div class="l">Maithili · 3,876 / 5,808</div></div>
+    </div>
+    <p class="mute" style="margin-top:var(--sp-xl)">All X ≤ 1.2 · lossless roundtrip · 4 specials + 256 byte symbols + 9740 merges.</p>
+  </div>
+</section>
+
+<!-- ================= SLIDE 11 — VS INSTRUCTOR ================= -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="kicker">10 · Head to head</div>
+    <h1 class="display-campaign">9953 vs 6503</h1>
+    <div class="vs-row">
+      <div class="vs-label"><span>Ours — hand-written byte-level BPE · weights 2/2/3/2 · spread 0.1005</span></div>
+      <div class="vs-bar"><div class="fill ours" style="width:100%"><span class="val">9953</span></div></div>
+      <div class="vs-label"><span>Instructor — HF tokenizers · Metaspace · weights 3/4/4/2 · spread 0.1538</span></div>
+      <div class="vs-bar"><div class="fill theirs" style="width:65.3%"><span class="val">6503</span></div></div>
+    </div>
+    <table class="data" style="margin-top:var(--sp-lg)">
+      <thead><tr><th>Tokenizer</th><th class="num">X_EN</th><th class="num">X_HI</th><th class="num">X_TE</th><th class="num">X_MAI</th><th class="num">Spread</th><th class="num">Score</th></tr></thead>
+      <tbody>
+        <tr class="winner"><td>Ours</td><td class="num">0.5669</td><td class="num">0.5774</td><td class="num">0.6012</td><td class="num">0.6674</td><td class="num">0.1005</td><td class="num">9953</td></tr>
+        <tr><td>Instructor reference</td><td class="num">0.5977</td><td class="num">0.5793</td><td class="num">0.6731</td><td class="num">0.7331</td><td class="num">0.1538</td><td class="num">6503</td></tr>
+      </tbody>
+    </table>
+    <p class="mute" style="margin-top:var(--sp-lg)"><strong style="color:var(--success)">+3451</strong> — won on tighter spread: near-equal weights + the instructor's clean corpus, not a bigger model.</p>
+  </div>
+</section>
+
+<!-- ================= SLIDE 12 — CLOSING ================= -->
+<section class="slide dark" data-theme="dark">
+  <div class="slide-inner">
+    <div class="kicker">11 · Fin</div>
+    <h1 class="display-huge">Fairness<br>is a spread.</h1>
+    <p class="lede" style="margin-top:var(--sp-xl)">
+      Zero → 1374 → 2648 → 9953. The algorithm mattered, the granularity mattered —
+      but reading your own corpus mattered most.
+    </p>
+    <div style="display:flex;gap:var(--sp-md);flex-wrap:wrap;margin-top:var(--sp-section)">
+      <a class="btn btn-inverse" href="widget.html">Open the widget</a>
+      <a class="btn btn-inverse" style="background:transparent;color:var(--on-primary);border:1px solid var(--ash)" href="vocab.json" download="vocab.json">Download vocab.json</a>
+      <a class="btn btn-inverse notebook-link" style="background:transparent;color:var(--on-primary);border:1px solid var(--ash)" href="https://github.com/revantg/tokenizer-assignment/blob/main/solution/fair_tokenizer_notebook.py" data-notebook-link>Marimo notebook</a>
+    </div>
+    <p class="hint" style="margin-top:var(--sp-xl)">
+      Deployed at: <a href="https://india-bpe-tokenizer.surge.sh/" id="live-site-link" data-widget-url style="color:var(--stone)">india-bpe-tokenizer.surge.sh</a>
+    </p>
+  </div>
+</section>
+
+<!-- chrome -->
+<div class="deck-controls">
+  <div class="slide-counter" id="counter">1 / 12</div>
+  <div class="paddles">
+    <button class="paddle" id="prev" aria-label="Previous slide">←</button>
+    <button class="paddle" id="next" aria-label="Next slide">→</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+"use strict";
+const slides = Array.from(document.querySelectorAll(".slide"));
+const deck = document.getElementById("deck");
+const counter = document.getElementById("counter");
+const progress = document.getElementById("progress");
+let idx = 0;
+
+function show(n) {
+  idx = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach((s, i) => s.classList.toggle("active", i === idx));
+  counter.textContent = (idx + 1) + " / " + slides.length;
+  progress.style.width = (((idx + 1) / slides.length) * 100) + "%";
+  deck.classList.toggle("on-dark", slides[idx].dataset.theme === "dark");
+  if (location.hash !== "#" + (idx + 1)) history.replaceState(null, "", "#" + (idx + 1));
+}
+
+document.getElementById("next").addEventListener("click", e => { e.stopPropagation(); show(idx + 1); });
+document.getElementById("prev").addEventListener("click", e => { e.stopPropagation(); show(idx - 1); });
+
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); show(idx + 1); }
+  else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); show(idx - 1); }
+  else if (e.key === "Home") { e.preventDefault(); show(0); }
+  else if (e.key === "End") { e.preventDefault(); show(slides.length - 1); }
+});
+
+// click anywhere on a slide (not a link/button) advances
+deck.addEventListener("click", e => {
+  if (e.target.closest("a, button, table")) return;
+  show(idx + 1);
+});
+
+// deep-link via #n
+const h = parseInt(location.hash.slice(1), 10);
+show(Number.isFinite(h) ? h - 1 : 0);
+</script>
+
+</body>
+</html>

@@ -74,3 +74,5 @@ python3 data/grok_2/approaches/a/train_bpe.py
 ## Relation to submission
 
 **B** calls this folder’s `ClassicBPE` for stage-1 only, then spends leftover slots on whole words + deficit fill. Pure A is the baseline **we do not ship** as the final story.
+
+For a *production* BPE reference (OpenAI tiktoken, 50k–200k vocab) on the same pages, see **Approach F** — still unfair on TE/SA under this score, and outside the 10k cap.

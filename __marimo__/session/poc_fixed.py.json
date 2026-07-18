@@ -1,0 +1,120 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.23.14",
+    "script_metadata_hash": null
+  },
+  "cells": [
+    {
+      "id": "setup",
+      "code_hash": "9f146a9b1d669fdcd4b2fde48bb43d02",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "OiiU",
+      "code_hash": "d8019fd7c9e4685c1af8e0d7812f6475",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "tHjD",
+      "code_hash": "48dc2f4ca906ed298dffd1acf91a6fa9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BEsa",
+      "code_hash": "d9e8c1bce18a24d1fbab748335bef7a1",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "NmcQ",
+      "code_hash": "bf076989df1a5c0390f47ca9bb97bca7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZTZQ",
+      "code_hash": "23432331cff79280cc6b02aa7ea6c8ad",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "xzoo",
+      "code_hash": "e68cd530dab6d39de488df34dcca640a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lvZk",
+      "code_hash": "ae1ff98607cc2a7a0e62bcfd1bae1b7e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "==================== FINAL ====================\nvocabulary size: 2000\nmerges learned: 1740\nEN: tokens=139 roundtrip_ok=True\nHI: tokens=232 roundtrip_ok=True\nTE: tokens=180 roundtrip_ok=True\nSA: tokens=236 roundtrip_ok=True\nfallback roundtrip_ok: True\n",
+          "mimetype": "text/plain"
+        }
+      ]
+    }
+  ]
+}

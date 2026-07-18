@@ -1,10 +1,10 @@
 # Structure (post-cleanup)
 
-## Top level of `grok_2` only
+## Top level of this repo (`tokenizer-assignment`)
 
 | Folder | Role |
 |--------|------|
-| `approaches/` | Methods a–e + champion (only place for approach code) |
+| `approaches/` | Methods a–f + champion (only place for approach code) |
 | `datasets/` | Corpora + HTML→MD builders + result JSONs |
 | `demo/` | slides + widget + lab UI |
 | `harness/` | score helpers |
@@ -13,9 +13,7 @@
 
 ## No external symlinks
 
-Every file used at runtime is a real path under `data/grok_2/…`.
-
-Outer `data/full_page_md` or `data/submission*` may still exist as older copies elsewhere in the repo, but **this agent does not link to them**; citizens of `grok_2` use `datasets/` and `demo/` only.
+Every file used at runtime is a real path under this repo. Corpora live in `datasets/`; demos in `demo/`.
 
 ## Renames
 

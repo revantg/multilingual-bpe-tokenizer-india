@@ -10,6 +10,7 @@ approaches/
 ├── c/                 Word inventory
 ├── d/                 Packing oracle
 ├── e/                 Words + phrases + DP
+├── f/                 tiktoken external baseline
 └── champion/          Packing + residual words
 ```
 
@@ -25,15 +26,25 @@ Each folder has a full **README.md** (idea, files, $X$/score, vocab, honesty).
 | D | [`d/`](d/README.md) | no | ~8076 | ~8.5e7 | 0.161 | 0.161 | 0.161 | 0.161 | **3–5** |
 | E | [`e/`](e/README.md) | no | 12603† | ∞ | 1.000 | 1.000 | 1.000 | 1.000 | **5–7** |
 | Champ | [`champion/`](champion/README.md) | no | 10 000 | ~8.5e7 | 0.161 | 0.161 | 0.161 | 0.161 | **3** |
+| **F** | [`f/`](f/README.md) | no (external) | 50k–200k | **~71–495** | 1.59–1.63 | 1.86–7.00 | 2.92–15.7 | 3.62–13.2 | **9** |
 
-† Over 10k → assignment-invalid until rebuilt under the cap.
+† Over 10k → assignment-invalid until rebuilt under the cap.  
+F = OpenAI **tiktoken** on the same pages/denom (best: `o200k_base` ≈ **495**). Fails vocab ≤10k and \(X_{\mathrm{EN}}\le 1.2\).
 
 ## Train B (submitted)
 
 ```bash
-python3 data/grok_2/approaches/b/train_optimized_b.py \
+# from repo root
+python3 approaches/b/train_optimized_b.py \
   --fill-mode deficit --tau 1.2 \
-  --out data/grok_2/approaches/b/vocab_optimized_fullpage.json
+  --out approaches/b/vocab_optimized_fullpage.json
 ```
 
-Corpus path used by code: `data/grok_2/datasets/full_page_md/`.
+## Re-run F (tiktoken baseline)
+
+```bash
+pip install tiktoken   # if needed
+python3 approaches/f/run_tiktoken_baseline.py
+```
+
+Corpus path used by code: `datasets/full_page_md/`.

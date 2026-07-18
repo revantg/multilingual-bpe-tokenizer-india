@@ -1,0 +1,275 @@
+/* ============================================================
+   Nike design tokens — per DESIGN.md
+   Fonts: Bebas Neue (display substitute for Nike Futura ND),
+   Inter (substitute for Helvetica Now Text/Display).
+   ============================================================ */
+
+:root {
+  --ink: #111111;
+  --on-primary: #ffffff;
+  --canvas: #ffffff;
+  --soft-cloud: #f5f5f5;
+  --charcoal: #39393b;
+  --ash: #4b4b4d;
+  --mute: #707072;
+  --stone: #9e9ea0;
+  --hairline: #cacacb;
+  --hairline-soft: #e5e5e5;
+  --sale: #d30005;
+  --success: #007d48;
+  --success-bright: #1eaa52;
+  --info: #1151ff;
+
+  --r-sm: 18px;
+  --r-md: 24px;
+  --r-lg: 30px;
+  --r-full: 9999px;
+
+  --sp-xxs: 2px;
+  --sp-xs: 4px;
+  --sp-sm: 8px;
+  --sp-md: 12px;
+  --sp-lg: 18px;
+  --sp-xl: 24px;
+  --sp-xxl: 30px;
+  --sp-section: 48px;
+
+  --font-display: "Bebas Neue", "Arial Narrow", sans-serif;
+  --font-ui: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--canvas);
+}
+
+/* ---------- type tiers ---------- */
+
+.display-campaign {
+  font-family: var(--font-display);
+  font-size: 96px;
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+
+.heading-xl { font-size: 32px; font-weight: 500; line-height: 1.2; }
+.heading-lg { font-size: 24px; font-weight: 500; line-height: 1.2; }
+.heading-md { font-size: 16px; font-weight: 500; line-height: 1.75; }
+.body-strong { font-size: 16px; font-weight: 500; line-height: 1.5; }
+.caption-md { font-size: 14px; font-weight: 500; line-height: 1.5; }
+.caption-sm { font-size: 12px; font-weight: 500; line-height: 1.5; }
+.utility-xs { font-size: 9px; font-weight: 500; line-height: 1.75; }
+
+.mute { color: var(--mute); }
+.stone { color: var(--stone); }
+
+/* ---------- chrome: utility bar + nav ---------- */
+
+.utility-bar {
+  background: var(--soft-cloud);
+  color: var(--ink);
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-lg);
+  padding: 0 var(--sp-section);
+  font-size: 12px;
+  font-weight: 500;
+}
+.utility-bar span { color: var(--mute); }
+
+.primary-nav {
+  background: var(--canvas);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--sp-section);
+  box-shadow: inset 0 -1px 0 var(--hairline-soft);
+}
+.primary-nav .brand {
+  font-family: var(--font-display);
+  font-size: 26px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+.primary-nav .nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-xl);
+  font-size: 16px;
+  font-weight: 500;
+}
+.primary-nav .nav-links a {
+  color: var(--ink);
+  text-decoration: none;
+  padding-bottom: 4px;
+}
+.primary-nav .nav-links a.active {
+  border-bottom: 2px solid var(--ink);
+}
+
+/* ---------- pill buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-sm);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  padding: 12px 32px;
+  min-height: 48px;
+  border-radius: var(--r-full);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 90ms ease, opacity 90ms ease;
+}
+.btn:active { transform: scale(0.97); opacity: 0.85; }
+
+.btn-primary { background: var(--ink); color: var(--on-primary); }
+.btn-secondary { background: var(--soft-cloud); color: var(--ink); }
+.btn-outline-on-image { background: var(--canvas); color: var(--ink); padding: 12px 24px; }
+.btn-sm { font-size: 14px; padding: 8px 20px; min-height: 40px; }
+
+/* inverse pill for dark surfaces */
+.btn-inverse { background: var(--on-primary); color: var(--ink); }
+
+/* ---------- badges & chips ---------- */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  border-radius: var(--r-full);
+  padding: 4px 12px;
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  color: var(--ink);
+}
+.badge-success {
+  border-color: var(--success);
+  color: var(--success);
+}
+.badge-success::before { content: "✓"; font-weight: 700; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--r-full);
+  padding: 8px 16px;
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  color: var(--ink);
+}
+.chip-active { background: var(--ink); color: var(--on-primary); border-color: var(--ink); }
+
+/* ---------- layout ---------- */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--sp-xl);
+}
+.section { padding: var(--sp-section) 0; }
+.section + .section { border-top: 1px solid var(--hairline); }
+
+.section-header {
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: var(--sp-xl);
+}
+.section-kicker {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin-bottom: var(--sp-sm);
+}
+
+/* ---------- tables ---------- */
+
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+table.data th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+  padding: var(--sp-md) var(--sp-md);
+  border-bottom: 1px solid var(--hairline);
+}
+table.data td {
+  padding: var(--sp-md) var(--sp-md);
+  border-bottom: 1px solid var(--hairline-soft);
+  font-variant-numeric: tabular-nums;
+}
+table.data td.num, table.data th.num { text-align: right; }
+table.data tr.winner td { background: var(--soft-cloud); font-weight: 600; }
+.pass { color: var(--success); font-weight: 600; }
+.fail { color: var(--sale); font-weight: 600; }
+
+/* ---------- code / mono ---------- */
+
+.mono {
+  font-family: "SF Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 14px;
+}
+
+/* ---------- footer ---------- */
+
+footer.site-footer {
+  border-top: 1px solid var(--hairline);
+  padding: var(--sp-section) var(--sp-section) var(--sp-xl);
+  color: var(--mute);
+  font-size: 14px;
+  font-weight: 500;
+}
+footer.site-footer a { color: var(--ink); text-decoration: underline; }
+footer.site-footer .fine-print {
+  margin-top: var(--sp-xl);
+  padding-top: var(--sp-md);
+  border-top: 1px solid var(--hairline-soft);
+  font-size: 9px;
+  line-height: 1.75;
+  color: var(--stone);
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 960px) {
+  .display-campaign { font-size: 64px; }
+  .utility-bar, .primary-nav { padding: 0 var(--sp-xl); }
+  .primary-nav .nav-links { gap: var(--sp-md); }
+}
+@media (max-width: 600px) {
+  .display-campaign { font-size: 48px; }
+  .section { padding: var(--sp-xl) 0; }
+}
