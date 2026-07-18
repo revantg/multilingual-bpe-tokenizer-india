@@ -10,5 +10,15 @@ venv/
 .ruff_cache/
 .pytest_cache/
 
-# created a custom skill for myself. have created a repo for it instead
-demo/lab/axiom_collector/**
+# marimo regenerable session cache (the .py notebooks are the source of truth)
+__marimo__/
+
+# agent-session scratch / handoff artifacts (never committed)
+.mimocode/
+.omp/
+*_BRIEF.md
+ai-transcripts/
+SCORE_PUSH_BRIEF.md
+
+# regenerable notebook exports
+tokenizer_from_notebook.json

@@ -4,8 +4,7 @@
 > solution is the author's own. AI was used **only to automate execution** —
 > writing boilerplate, running sweeps, tabulating results, and exporting
 > transcripts. It did **not** generate the approach, the diagnosis, or the
-> strategy. The full AI session is included verbatim under
-> [`ai-transcripts/`](ai-transcripts/) for complete transparency.
+> strategy.
 
 ## What this is
 
@@ -243,8 +242,7 @@ solution/
 │   ├── mai_sweep_results.json           ← clean-corpus weight sweep (picks champion)
 │   ├── DEEPDIVE_FINDINGS.md             ← why the instructor scored well; corpus root-cause
 │   └── REDPILL_FINDINGS.md              ← adversarial validation of the champion vs the gate
-├── instructor_reference/         ← the instructor's shipped solution (for comparison)
-└── ai-transcripts/               ← full AI session (jsonl + html, git-LFS)
+└── instructor_reference/         ← the instructor's shipped solution (for comparison)
 ```
 
 ## Reproduce everything

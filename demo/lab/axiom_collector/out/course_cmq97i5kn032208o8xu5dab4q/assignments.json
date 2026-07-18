@@ -1,0 +1,106 @@
+[
+  {
+    "id": "cmqutyi1i01hi08njprnpfxwq",
+    "sessionId": "cmq9ghp7y03yc08o8ajxhdsu2",
+    "courseId": "cmq97i5kn032208o8xu5dab4q",
+    "title": "Session 1 - Assignment QnA",
+    "descriptionMarkdown": "# S1-1 · Activations exist for a reason.\nClaim: a model with no nonlinearity can only draw a straight boundary, so it cannot separate two interleaved/concentric rings; adding one ReLU hidden layer can. Build: generate ~300 noisy 2D points as two rings (inner = class 0, outer = class 1), not linearly separable. Train (a) a single linear layer + sigmoid, (b) one ReLU hidden layer. Proof: plot both decision boundaries — the linear one is a straight line stuck near 55% accuracy, the ReLU one wraps the ring to ~99%. Only the activation changed. The boundary picture is the money shot.\n\n# S1-2 · Depth without nonlinearity is a lie.\nClaim: five stacked linear layers collapse to a single linear map, so a 5-layer linear net is no stronger than 1 layer; both fail the ring task identically, and inserting ReLUs between the same five layers suddenly solves it. Build: same ring data; train 1 linear layer, 5 linear layers (no activations), then 5 layers + ReLU. Proof: the 1-layer and 5-linear-layer accuracies and boundaries are identical (both a line); ReLU breaks the tie. Bonus that nails it: multiply the five weight matrices numerically and show the product is one matrix.\n\n# S1-3 · Embeddings learn similarity from nothing but next-token.\nClaim: trained only to predict the next token in a tiny synthetic grammar, the embedding table clusters related tokens, though similarity was never supplied. Build: a toy language with categories (animals: cat dog cow; fruits: apple mango; verbs: eat chase see) and templates like <animal> <verb> <fruit>, so same-category tokens share next-token distributions. Train a tiny embedding→softmax next-token model. Proof: project the learned embeddings to 2D and plot — same-category tokens land together; nearest neighbors are same-category. Emergent clustering = the proof.\n\n# S1-4 · Memorization vs generalization, and data closes the gap.\nClaim: a high-capacity model on tiny data drives train loss to ~0 while held-out loss stays high; growing the dataset closes the gap. Build: a learnable noisy classification with a held-out split; train an over-parameterized net at train sizes 20, 200, 2000. Proof: the train/test gap is huge at 20 (train→0, test bad) and shrinks as data grows — plot the generalization gap vs dataset size. Ties straight into the course's \"data is everything.\"\n\nWhat are you submitting. You are working with your agents to design a beautiful webapp which proves these 4 points, and then uploading on [netlify](https://app.netlify.com/drop) and then sharing the link. Make an account on Netlify to keep it permanent.",
+    "rubricJson": [],
+    "dueAt": "2026-07-04T02:00:00.000Z",
+    "latePolicy": null,
+    "maxPoints": 500,
+    "assignmentRepoUrl": "",
+    "assignmentRepoName": null,
+    "allowResubmission": true,
+    "status": "published",
+    "kind": "individual",
+    "order": 0,
+    "parts": [
+      {
+        "id": "cmqutyi1v01hj08nj2rlpxb6u",
+        "assignmentId": "cmqutyi1i01hi08njprnpfxwq",
+        "order": 0,
+        "label": "Netlify Link",
+        "prompt": "1 Link to show all 4 examples. ",
+        "type": "link",
+        "points": 500,
+        "config": {
+          "allowMultiple": false,
+          "requireCaption": true,
+          "requirePrivacyConfirm": true
+        }
+      },
+      {
+        "id": "cmqutyi2501hk08njkfozqk6q",
+        "assignmentId": "cmqutyi1i01hi08njprnpfxwq",
+        "order": 1,
+        "label": "LinkedIn",
+        "prompt": "Additional 250pts if you end up making it awesome and confident enough to share on your own LinkedIn. No need to tag us. ",
+        "type": "link",
+        "points": 0,
+        "config": {
+          "allowMultiple": false,
+          "requireCaption": true,
+          "requirePrivacyConfirm": true
+        }
+      }
+    ],
+    "_count": {
+      "submissions": 165
+    },
+    "hasUserSubmission": true,
+    "submissionCount": 165
+  },
+  {
+    "id": "cmr4vjd9l03we09pl452oio80",
+    "sessionId": "cmq9gi24c03yf08o80th20zlh",
+    "courseId": "cmq97i5kn032208o8xu5dab4q",
+    "title": "Session 2 Assignment QnA",
+    "descriptionMarkdown": "# Assignment\n\nYour assignment would be to pick India's page on Wikipedia in English, Hindi, Telugu, and one more language of your choice. Ask your AI Agent to design a BPE tokenizer in such a way that:\n- you have 10000 tokens (your vocab) overall for all languages, \n- (Total English tokens)/(Total English Vocab, say 5000 words) must be **1.2** or less, let's call this X1\n- Similarly ratios for your Hingi, Telugu and another language is X2, X3, X4\n- Sort X1, X2, X3, X4.. say its X4 (largest), X2, X3, X1 (least). \n- Your assignment score is going to be 1000/(X4 - X1). \n\nWhat are you submitting:\n- A Widget that shows these ratios, token statistics and calculations and your self score \n- Allows me to see and **download** your tokenizer (list of all tokens)\n- URL for this widget on Netlify (or anywhere else you want to host)\n- **Please remember that we'll run your tokenizer ourselves to confirm your scores, so be careful when you present claims about your numbers\"",
+    "rubricJson": [],
+    "dueAt": "2026-07-11T01:30:00.000Z",
+    "latePolicy": null,
+    "maxPoints": 1000,
+    "assignmentRepoUrl": "",
+    "assignmentRepoName": null,
+    "allowResubmission": true,
+    "status": "published",
+    "kind": "individual",
+    "order": 0,
+    "parts": [
+      {
+        "id": "cmr4vjd9u03wf09plxpk8nsuf",
+        "assignmentId": "cmr4vjd9l03we09pl452oio80",
+        "order": 0,
+        "label": "Widget Link",
+        "prompt": "",
+        "type": "link",
+        "points": 500,
+        "config": {
+          "allowMultiple": false,
+          "requireCaption": true,
+          "requirePrivacyConfirm": true
+        }
+      },
+      {
+        "id": "cmra07c130db809qi6fdnwoer",
+        "assignmentId": "cmr4vjd9l03we09pl452oio80",
+        "order": 1,
+        "label": "Tokenizer.json",
+        "prompt": "Link to download Tokenizer.json (cannot be google drive link as you may make a mistake of keeping it private, not shareable)",
+        "type": "link",
+        "points": 500,
+        "config": {
+          "allowMultiple": false,
+          "requireCaption": true,
+          "requirePrivacyConfirm": true
+        }
+      }
+    ],
+    "_count": {
+      "submissions": 149
+    },
+    "hasUserSubmission": true,
+    "submissionCount": 149
+  }
+]
