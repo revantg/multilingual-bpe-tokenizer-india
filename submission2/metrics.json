@@ -1,0 +1,40 @@
+{
+  "weights": {
+    "EN": 2.0,
+    "HI": 2.2,
+    "TE": 3.7,
+    "MAI": 4.05
+  },
+  "faithful_units": {
+    "EN": 186367,
+    "HI": 88359,
+    "TE": 36292,
+    "MAI": 5808
+  },
+  "token_counts": {
+    "EN": 106601,
+    "HI": 50673,
+    "TE": 20941,
+    "MAI": 3326
+  },
+  "ratios": {
+    "EN": 0.571995,
+    "HI": 0.57349,
+    "TE": 0.577014,
+    "MAI": 0.572658
+  },
+  "spread": 0.005019,
+  "raw_score": 199235.89,
+  "english_penalty_factor": 1.0,
+  "adjusted_score": 199235.89,
+  "all_under_1_2": true,
+  "vocab_size": 10000,
+  "num_merges": 9740,
+  "unk_hits": {
+    "EN": 0,
+    "HI": 0,
+    "TE": 0,
+    "MAI": 0
+  },
+  "roundtrip_ok": true
+}
