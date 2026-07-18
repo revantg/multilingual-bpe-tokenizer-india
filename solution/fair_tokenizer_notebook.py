@@ -8,6 +8,7 @@ with app.setup:
     # Standard library only for the core tokenizer — no tokenization libraries.
     import json
     from collections import Counter, defaultdict
+    from dataclasses import dataclass
     from heapq import heapify_max, heappop_max, heappush_max
     from pathlib import Path
     from typing import Callable, TypeAlias
@@ -160,24 +161,34 @@ def _():
 
 @app.cell
 def _():
-    # ── Result of one merge (small, explicit helper) ─────────────────────────
-    def merge_optimized(word_seq: list[str], sym1: str, sym2: str) -> list[str]:
-        """Replace every non-overlapping (sym1, sym2) in word_seq with sym1+sym2."""
+    # ── Artifact: result of one merge operation ──────────────────────────────
+    # Bundles the updated sequence together with the symbol that was actually
+    # created, so callers never need to recompute sym1+sym2 independently
+    # (keeps merge_optimized() as the single source of truth for the new token).
+    @dataclass(frozen=True)
+    class MergeResult:
+        updated_seq: list[str]
+        created_symbol: str
+
+    def merge_optimized(word_seq: list[str], sym1: str, sym2: str) -> MergeResult:
+        """Merge every non-overlapping occurrence of ``(sym1, sym2)``."""
         new_symbol = sym1 + sym2
-        out: list[str] = []
-        i = 0
-        while i < len(word_seq):
+        updated_seq: list[str] = []
+
+        index = 0
+        while index < len(word_seq):
             if (
-                i + 1 < len(word_seq)
-                and word_seq[i] == sym1
-                and word_seq[i + 1] == sym2
+                index + 1 < len(word_seq)
+                and word_seq[index] == sym1
+                and word_seq[index + 1] == sym2
             ):
-                out.append(new_symbol)
-                i += 2
+                updated_seq.append(new_symbol)
+                index += 2
             else:
-                out.append(word_seq[i])
-                i += 1
-        return out
+                updated_seq.append(word_seq[index])
+                index += 1
+
+        return MergeResult(updated_seq=updated_seq, created_symbol=new_symbol)
 
     return (merge_optimized,)
 
@@ -298,63 +309,82 @@ def _(
 
         # ── the training loop (shared by every granularity) ──────────────────
         def train_bpe_optimized(self, corpus: list[str], vocab_size: int) -> None:
-            stats = TokenizerStatsV2.build_stats(corpus, token_to_byte_symbols)
-            p2t = stats.pair_to_token_map
-            t2s = stats.token_to_symbols_map
-            tf = stats.token_freq
-            pf = stats.pair_freq
+            # corpus (pre-tokenized units) is passed in at train time; pooling
+            # across ALL languages keeps merges/vocab shared and priced
+            # consistently across scripts.
+            stats = TokenizerStatsV2.build_stats(
+                raw_tokens=corpus, symbolize=token_to_byte_symbols
+            )
+            pair_to_token_map = stats.pair_to_token_map
+            token_to_symbols_map = stats.token_to_symbols_map
+            token_freq = stats.token_freq
+            pair_freq = stats.pair_freq
 
             # max-heap of (frequency, pair) — I like performance (3.2).
-            heap = [(c, p) for p, c in pf.items()]
-            heapify_max(heap)
+            pair_freq_max_heap = [
+                (count, pair) for pair, count in pair_freq.items()
+            ]
+            heapify_max(pair_freq_max_heap)
 
-            while len(self.vocab) < vocab_size and heap:
-                top = None
-                while heap:
-                    count, cand = heappop_max(heap)
-                    if count > 0 and pf[cand] == count:  # skip stale heap entries
-                        top = cand
+            while len(self.vocab) < vocab_size and pair_freq_max_heap:
+                top_pair: BPETokenizer.TokenPair | None = None
+                while pair_freq_max_heap:
+                    count, candidate_pair = heappop_max(pair_freq_max_heap)
+                    if count > 0 and pair_freq[candidate_pair] == count:
+                        top_pair = candidate_pair  # skip stale heap entries
                         break
-                if top is None:
+
+                if top_pair is None:
                     break
 
-                merged = "".join(top)
-                if merged in self.vocab:  # already learned (shared ASCII/digits)
+                merged_token = "".join(top_pair)
+                if merged_token in self.vocab:
+                    # Already learned in an earlier train_bpe_optimized() call
+                    # (shared ASCII/digits recur across languages). Keep its
+                    # original, higher-priority rank; re-appending would scramble
+                    # the greedy encode order.
                     continue
-                self.vocab[merged] = len(self.vocab)
-                self.merge_rank[top] = len(self.merges)
-                self.merges.append(top)
+                self.vocab[merged_token] = len(self.vocab)
+                self.merge_rank[top_pair] = len(self.merges)
+                self.merges.append(top_pair)
 
-                touched = set()
-                for token in p2t.get(top, set()).copy():
-                    symbols = t2s[token]
+                tokens = pair_to_token_map.get(top_pair, set()).copy()
+                updated_pairs: set[BPETokenizer.TokenPair] = set()
+
+                for token in tokens:
+                    symbols = token_to_symbols_map[token]
                     for pair in zip(symbols, symbols[1:]):
-                        pf[pair] -= tf[token]
-                        p2t[pair].discard(token)
-                        touched.add(pair)
-                    updated = merge_optimized(symbols, *top)
-                    t2s[token] = updated
-                    for pair in zip(updated, updated[1:]):
-                        pf[pair] += tf[token]
-                        p2t.setdefault(pair, set()).add(token)
-                        touched.add(pair)
-                for pair in touched:
-                    if pf[pair] > 0:
-                        heappush_max(heap, (pf[pair], pair))
+                        pair_freq[pair] -= token_freq[token]
+                        pair_to_token_map[pair].discard(token)
+                        updated_pairs.add(pair)
+
+                    updated_seq = merge_optimized(symbols, *top_pair).updated_seq
+                    token_to_symbols_map[token] = updated_seq
+
+                    for pair in zip(updated_seq, updated_seq[1:]):
+                        pair_freq[pair] += token_freq[token]
+                        pair_to_token_map.setdefault(pair, set()).add(token)
+                        updated_pairs.add(pair)
+
+                for pair in updated_pairs:
+                    if pair_freq[pair] > 0:
+                        heappush_max(
+                            pair_freq_max_heap, (pair_freq[pair], pair)
+                        )
 
         # ── encode / decode (3.3) ────────────────────────────────────────────
         def _apply_merges(self, symbols: list[str]) -> list[str]:
             symbols = list(symbols)
             while len(symbols) > 1:
                 ranked = [
-                    (self.merge_rank[p], p)
-                    for p in zip(symbols, symbols[1:])
-                    if p in self.merge_rank
+                    (self.merge_rank[pair], pair)
+                    for pair in zip(symbols, symbols[1:])
+                    if pair in self.merge_rank
                 ]
                 if not ranked:
                     break
-                _, best = min(ranked, key=lambda it: it[0])
-                symbols = merge_optimized(symbols, *best)
+                _, best_pair = min(ranked, key=lambda item: item[0])
+                symbols = merge_optimized(symbols, *best_pair).updated_seq
             return symbols
 
         def _pretokenize(self, text: str) -> list[str]:
