@@ -1,0 +1,92 @@
+{
+  "1_word_level": {
+    "X": {
+      "EN": 0.9841,
+      "HI": 1.5637,
+      "TE": 1.6712,
+      "SA": 1.5139,
+      "MAI": 1.7119
+    },
+    "tokens": {
+      "EN": 183409,
+      "HI": 138164,
+      "TE": 60650,
+      "SA": 52608,
+      "MAI": 9943
+    },
+    "faithful_units": {
+      "EN": 186367,
+      "HI": 88359,
+      "TE": 36292,
+      "SA": 34751,
+      "MAI": 5808
+    },
+    "spread": 0.7278,
+    "raw_score": 1374.0,
+    "all_under_1_2": false,
+    "vocab_size": 10000,
+    "num_merges": 9740,
+    "unk_total": 0,
+    "roundtrip_ok": true
+  },
+  "2_sentence_level": {
+    "X": {
+      "EN": 0.5584,
+      "HI": 0.5593,
+      "TE": 0.659,
+      "SA": 0.2814,
+      "MAI": 0.6176
+    },
+    "tokens": {
+      "EN": 104076,
+      "HI": 49417,
+      "TE": 23918,
+      "SA": 9778,
+      "MAI": 3587
+    },
+    "faithful_units": {
+      "EN": 186367,
+      "HI": 88359,
+      "TE": 36292,
+      "SA": 34751,
+      "MAI": 5808
+    },
+    "spread": 0.3777,
+    "raw_score": 2647.8,
+    "all_under_1_2": true,
+    "vocab_size": 10000,
+    "num_merges": 9740,
+    "unk_total": 0,
+    "roundtrip_ok": true
+  },
+  "3_paragraph_level": {
+    "X": {
+      "EN": 0.5637,
+      "HI": 0.569,
+      "TE": 0.672,
+      "SA": 0.2881,
+      "MAI": 0.6391
+    },
+    "tokens": {
+      "EN": 105049,
+      "HI": 50272,
+      "TE": 24389,
+      "SA": 10012,
+      "MAI": 3712
+    },
+    "faithful_units": {
+      "EN": 186367,
+      "HI": 88359,
+      "TE": 36292,
+      "SA": 34751,
+      "MAI": 5808
+    },
+    "spread": 0.3839,
+    "raw_score": 2604.7,
+    "all_under_1_2": true,
+    "vocab_size": 10000,
+    "num_merges": 9740,
+    "unk_total": 0,
+    "roundtrip_ok": true
+  }
+}
