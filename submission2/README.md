@@ -9,6 +9,8 @@ robust byte-level BPE scoring **9953**. Submission 2 asks a different question:
 *how far can the score go if we deliberately tune to this exact corpus?* — and is
 transparent about the overfitting that entails.
 
+**Live:** [widget + slides + notebook](https://india-bpe-tokenizer-overfit.surge.sh)
+
 ## What changed from Submission 1
 
 Two fair, principled knobs on the same hand-written byte-level BPE:

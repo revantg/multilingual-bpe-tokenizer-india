@@ -126,5 +126,5 @@ cd submission2 && python train.py && python build_artifacts.py
 
 ## Live sites
 
-- Stage 1 (honest, 9953): https://india-bpe-tokenizer.surge.sh
+- Stage 1 (honest, 9953): [widget + story](https://india-bpe-tokenizer.surge.sh) · [slides](https://revant-tokenizer-slides.surge.sh)
 - Stage 2 (overfit, 199236): https://india-bpe-tokenizer-overfit.surge.sh

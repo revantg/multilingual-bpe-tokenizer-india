@@ -15,6 +15,9 @@ the largest/smallest of the four. Lower spread ⇒ higher score. Hard gates:
 vocab = 10000, every `X_L ≤ 1.2`, `decode(encode(text))` preserves all visible
 characters, and **zero UNK**.
 
+**Live:** [widget + story](https://india-bpe-tokenizer.surge.sh) ·
+[slides](https://revant-tokenizer-slides.surge.sh)
+
 ## Final result (champion)
 
 Trained on the clean wiki-faithful corpus, weights **EN:2 HI:2 TE:3 MAI:2**:
