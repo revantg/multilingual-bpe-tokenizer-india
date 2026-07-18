@@ -43,12 +43,12 @@ impossible. This byte-level base underpins every later stage.
 With the byte-level base fixed, the search moved through pre-tokenization
 granularity and then vocab distribution:
 
-| approach | what changed | spread | score | gate |
-|---|---|---:|---:|:--:|
-| word / subword | merges never cross a word | 0.7278 | 1374 | ✗ (Indic > 1.2) |
-| sentence-level | merges span a sentence | 0.3777 | 2648 | ✓ |
-| paragraph-level | merges span a line | 0.3839 | 2605 | ✓ |
-| **weight sweep on clean corpus** | upsample per language | **0.1005** | **9953** | ✓ |
+| approach | what changed | X_EN | X_HI | X_TE | X_MAI | spread | score | gate |
+|---|---|---:|---:|---:|---:|---:|---:|:--:|
+| word / subword | merges never cross a word | 0.9841 | 1.5637 | 1.6712 | 1.7119 | 0.7278 | 1374 | ✗ (Indic > 1.2) |
+| sentence-level | merges span a sentence | 0.5584 | 0.5593 | 0.6590 | 0.6176 | 0.3777 | 2648 | ✓ |
+| paragraph-level | merges span a line | 0.5637 | 0.5690 | 0.6720 | 0.6391 | 0.3839 | 2605 | ✓ |
+| **weight sweep on clean corpus** | upsample per language `{2,2,3,2}` | **0.5669** | **0.5774** | **0.6012** | **0.6674** | **0.1005** | **9953** | ✓ |
 
 Two insights unlocked 9953: (1) the user's Sanskrit page was ~30–70%
 percent-encoded URL hex that distorted fertility — swapping to the instructor's
@@ -73,6 +73,38 @@ the overfitting. Two fair, principled knobs on the **same hand-written
 
 Result with weights **EN:2 HI:2.2 TE:3.7 MAI:4.05**: spread **0.005019**, score
 **199236**, all gates pass.
+
+**Stage 1 — clean-corpus integer weight sweep** (all pass gates; sorted by score):
+
+| weights EN/HI/TE/MAI | X_EN | X_HI | X_TE | X_MAI | spread | score |
+|---|---:|---:|---:|---:|---:|---:|
+| **2/2/3/2 — champion** | **0.5669** | **0.5774** | **0.6012** | **0.6674** | **0.1005** | **9953** |
+| 1/1/1/1 | 0.5580 | 0.5665 | 0.6627 | 0.6565 | 0.1048 | 9546 |
+| 1/1/2/1 | 0.5748 | 0.5877 | 0.5592 | 0.6810 | 0.1218 | 8212 |
+| 2/3/3/2 | 0.5802 | 0.5410 | 0.6288 | 0.6708 | 0.1298 | 7707 |
+| 3/3/3/2 | 0.5578 | 0.5675 | 0.6550 | 0.7152 | 0.1574 | 6353 |
+| 3/3/4/2 | 0.5591 | 0.5767 | 0.6256 | 0.7347 | 0.1755 | 5696 |
+| 2/2/2/1 | 0.5578 | 0.5686 | 0.6502 | 0.7441 | 0.1863 | 5367 |
+| 1/2/2/1 | 0.6089 | 0.5166 | 0.6024 | 0.7030 | 0.1864 | 5366 |
+| 2/2/3/1 | 0.5643 | 0.5791 | 0.6007 | 0.7550 | 0.1907 | 5243 |
+| 3/2/2/1 | 0.5330 | 0.6077 | 0.7026 | 0.7862 | 0.2532 | 3950 |
+
+**Stage 2 — fractional + newline search** (coordinate descent from 9953 → 199236;
+all vocab 10000, 0 UNK, lossless):
+
+| # | approach / weights | X_EN | X_HI | X_TE | X_MAI | spread | score |
+|---|---|---:|---:|---:|---:|---:|---:|
+| 1 | word-level subword | 0.9841 | 1.5637 | 1.6712 | 1.7119 | 0.7278 | 1374 |
+| 2 | sentence-level | 0.5584 | 0.5593 | 0.6590 | 0.6176 | 0.3777 | 2648 |
+| 3 | paragraph-level | 0.5637 | 0.5690 | 0.6720 | 0.6391 | 0.3839 | 2605 |
+| 4 | instructor reference 3/4/4/2 | 0.5977 | 0.5793 | 0.6731 | 0.7331 | 0.1538 | 6503 |
+| 5 | integer 1/1/1/1 | 0.5580 | 0.5665 | 0.6627 | 0.6565 | 0.1048 | 9546 |
+| 6 | **integer 2/2/3/2 — Stage 1 champion** | 0.5669 | 0.5774 | 0.6012 | 0.6674 | 0.1005 | 9953 |
+| 7 | fractional 2/2/3.5/3.5 | 0.5751 | 0.5828 | 0.5797 | 0.5914 | 0.0164 | 61100 |
+| 8 | fractional 2/2.1/3.5/3.8 | 0.5757 | 0.5783 | 0.5854 | 0.5895 | 0.0138 | 72256 |
+| 9 | fractional 2/2.1/3.4/4.0 (best plain) | 0.5766 | 0.5794 | 0.5843 | 0.5835 | 0.0077 | 129954 |
+| 10 | +newline 2/2.1/3.7/4.0 | 0.5702 | 0.5793 | 0.5713 | 0.5773 | 0.0091 | 109587 |
+| **11** | **+newline 2/2.2/3.7/4.05 — Stage 2 (this)** | **0.571995** | **0.573490** | **0.577014** | **0.572658** | **0.005019** | **199236** |
 
 **Honesty caveat (the whole point of Stage 2):** the exact 199236 is
 **snapshot-specific**. Under corpus perturbation (a simulated different wiki
