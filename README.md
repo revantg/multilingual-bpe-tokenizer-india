@@ -137,7 +137,9 @@ Run any of them live: `marimo edit poc.py`.
 .
 ├── README.md                 ← this file (the full story)
 ├── solution/                 ← Stage 1: the honest champion (score 9953)
+│   └── frontend/             ← static story, widget, notebook + tokenizer artifacts
 ├── submission2/              ← Stage 2: the overfit push  (score 199236)
+│   └── frontend/             ← static results, story, notebook + tokenizer artifacts
 ├── datasets/                 ← raw + derived Wikipedia corpora (all languages tried)
 ├── naive_bpe.py  poc.py  poc_gpt2.py   ← hand-written BPE proof-of-concept notebooks
 └── *.html                    ← static exports of the notebooks (git LFS)
@@ -158,5 +160,22 @@ cd submission2 && python train.py && python build_artifacts.py
 
 ## Live sites
 
-- Stage 1 (honest, 9953): [widget + story](https://india-bpe-tokenizer.surge.sh) · [slides](https://revant-tokenizer-slides.surge.sh)
-- Stage 2 (overfit, 199236): https://india-bpe-tokenizer-overfit.surge.sh
+### Current static frontends
+
+The `solution/frontend/` and `submission2/frontend/` directories are static sites:
+upload the directory as-is; there is no JavaScript build step.
+
+- Stage 1 (honest, 9953): [Surge root](https://india-bpe-tokenizer.surge.sh) ·
+  [widget](https://india-bpe-tokenizer.surge.sh/widget.html) ·
+  [story](https://india-bpe-tokenizer.surge.sh/slides.html) ·
+  [notebook](https://india-bpe-tokenizer.surge.sh/notebook.html)
+- Stage 2 (overfit, 199236): [Surge root](https://india-bpe-tokenizer-overfit.surge.sh)
+
+### Netlify deployments
+
+These are the earlier Approach B / score-9237 snapshots still hosted on Netlify:
+
+- [slides](https://tokenizer-india-slides-rev.netlify.app) ·
+  [optimized widget](https://tokenizer-india-b-opt-rev-28915.netlify.app)
+- Matching legacy slide mirror on Surge:
+  [revant-tokenizer-slides.surge.sh](https://revant-tokenizer-slides.surge.sh)
